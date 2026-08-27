@@ -7,7 +7,7 @@ public class SpeechBubbleManager : MonoBehaviour
 {
     public GameObject speechBubblePrefab;
 
-    public Dictionary<GameObject, SpeechBubbleContainer> speechBubbleContainers = new Dictionary<GameObject, SpeechBubbleContainer>();
+    private Dictionary<GameObject, SpeechBubbleContainer> speechBubbleContainers = new Dictionary<GameObject, SpeechBubbleContainer>();
     public GameObject target;
 
     public IEnumerator CreateMessage(SpeechBubbleContainer container, string message) {

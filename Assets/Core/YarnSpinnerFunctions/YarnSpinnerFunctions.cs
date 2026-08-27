@@ -164,9 +164,16 @@ public static class YarnSpinnerFunctions
     }
 
     [YarnCommand("wait_for_location")]
-    public static IEnumerator WaitToReachTarget(GameObject gameObject, GameObject target, float treshold=1.5f) {
+    public static IEnumerator WaitToReachTarget(string gameObjectName, string targetName, float treshold = 1.5f)
+    {
+        GameObject gameObject = FindGameObject(gameObjectName);
+        GameObject target = FindGameObject(targetName);
+
+        if (gameObject == null || target == null) yield break;
+
         float distance = 0f;
-        do {
+        do
+        {
             distance = GetDistance(gameObject, target);
             yield return null;
         } while (distance > treshold);
