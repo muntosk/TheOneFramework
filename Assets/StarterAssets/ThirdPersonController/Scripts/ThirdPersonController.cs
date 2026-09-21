@@ -75,6 +75,14 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        [Header("Portals")]
+        [Tooltip("How quickly momentum gained from a portal fling bleeds off once grounded again")]
+        public float PortalVelocityDamping = 6.0f;
+
+        // momentum carried in from a portal warp (e.g. flinging through a floor portal);
+        // decays once grounded so normal input-driven movement takes back over
+        private Vector3 _externalVelocity;
+
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -164,6 +172,16 @@ namespace StarterAssets
         private void LateUpdate()
         {
             CameraRotation();
+        }
+
+        // Called by PlayerPortalTraveller right after it teleports the transform through a portal.
+        // worldVelocity is the redirected exit velocity; yawDelta is how much the player's facing
+        // just changed, which the free-look camera needs to match or it stays pointed the old way.
+        public void ApplyPortalVelocity(Vector3 worldVelocity, float yawDelta)
+        {
+            _verticalVelocity = worldVelocity.y;
+            _externalVelocity = new Vector3(worldVelocity.x, 0.0f, worldVelocity.z);
+            _cinemachineTargetYaw += yawDelta;
         }
 
         private void AssignAnimationIDs()
@@ -267,9 +285,17 @@ namespace StarterAssets
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-            // move the player
+            // move the player (input-driven movement plus any momentum carried in from a portal fling)
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+                             _externalVelocity * Time.deltaTime +
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+            // bleed off portal momentum once grounded again so normal input control resumes
+            if (Grounded && _externalVelocity.sqrMagnitude > 0.0f)
+            {
+                _externalVelocity = Vector3.MoveTowards(_externalVelocity, Vector3.zero,
+                    PortalVelocityDamping * Time.deltaTime);
+            }
 
             // update animator if using character
             if (_hasAnimator)

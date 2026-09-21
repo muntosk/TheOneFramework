@@ -12,6 +12,8 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
+		public bool firePortal1;
+		public bool firePortal2;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -43,6 +45,16 @@ namespace StarterAssets
 		{
 			SprintInput(value.isPressed);
 		}
+
+		public void OnFirePortal1(InputValue value)
+		{
+			FirePortal1Input(value.isPressed);
+		}
+
+		public void OnFirePortal2(InputValue value)
+		{
+			FirePortal2Input(value.isPressed);
+		}
 #endif
 
 
@@ -65,7 +77,17 @@ namespace StarterAssets
 		{
 			sprint = newSprintState;
 		}
-		
+
+		public void FirePortal1Input(bool newState)
+		{
+			firePortal1 = newState;
+		}
+
+		public void FirePortal2Input(bool newState)
+		{
+			firePortal2 = newState;
+		}
+
 		private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
