@@ -51,8 +51,11 @@ namespace TheOneFramework.Portals
         {
             if (!Physics.Raycast(pos, dir, out RaycastHit hit, distance, layerMask))
             {
+                Debug.Log($"[PortalGun] FirePortal({portalID}) missed - no raycast hit from {pos} dir {dir}");
                 return;
             }
+
+            Debug.Log($"[PortalGun] FirePortal({portalID}) hit {hit.collider.name} (layer {hit.collider.gameObject.layer}, tag {hit.collider.tag}) at {hit.point}");
 
             // If we shoot an existing portal, recursively fire through it to place on the far side.
             if (hit.collider.CompareTag("Portal"))
@@ -98,6 +101,7 @@ namespace TheOneFramework.Portals
             var portalRotation = Quaternion.LookRotation(portalForward, portalUp);
 
             bool wasPlaced = portals.Portals[portalID].PlacePortal(hit.collider, hit.point, portalRotation);
+            Debug.Log($"[PortalGun] PlacePortal({portalID}) -> wasPlaced={wasPlaced}");
 
             if (wasPlaced && crosshair != null)
             {

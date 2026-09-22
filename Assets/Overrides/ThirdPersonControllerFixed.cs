@@ -75,6 +75,14 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        [Header("Portals")]
+        [Tooltip("How quickly momentum gained from a portal fling bleeds off once grounded again")]
+        public float PortalVelocityDamping = 6.0f;
+
+        // momentum carried in from a portal warp (e.g. flinging through a floor portal);
+        // decays once grounded so normal input-driven movement takes back over
+        private Vector3 _externalVelocity;
+
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -97,6 +105,8 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDVelocityX;
+        private int _animIDVelocityZ;
 
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
@@ -152,6 +162,15 @@ namespace StarterAssets
             _fallTimeoutDelta = FallTimeout;
         }
 
+        // Defining this (even empty) forces Unity to route root motion through here instead of
+        // applying it automatically - since we never call animator.ApplyBuiltinRootMotion() or
+        // touch deltaPosition/deltaRotation here, any root motion baked into a clip (or leaking
+        // through despite import settings) is discarded, guaranteed. Only CharacterController.Move()
+        // in Move() is allowed to move this transform.
+        private void OnAnimatorMove()
+        {
+        }
+
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
@@ -166,6 +185,16 @@ namespace StarterAssets
             CameraRotation();
         }
 
+        // Called by PlayerPortalTraveller right after it teleports the transform through a portal.
+        // worldVelocity is the redirected exit velocity; yawDelta is how much the player's facing
+        // just changed, which the free-look camera needs to match or it stays pointed the old way.
+        public void ApplyPortalVelocity(Vector3 worldVelocity, float yawDelta)
+        {
+            _verticalVelocity = worldVelocity.y;
+            _externalVelocity = new Vector3(worldVelocity.x, 0.0f, worldVelocity.z);
+            _cinemachineTargetYaw += yawDelta;
+        }
+
         private void AssignAnimationIDs()
         {
             _animIDSpeed = Animator.StringToHash("Speed");
@@ -173,6 +202,8 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDVelocityX = Animator.StringToHash("VelocityX");
+            _animIDVelocityZ = Animator.StringToHash("VelocityZ");
         }
 
         private void GroundedCheck()
@@ -253,30 +284,48 @@ namespace StarterAssets
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
             // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is a move input rotate player when the player is moving
+            // Movement direction stays WASD-relative-to-camera (so strafing/backpedalling work),
+            // tracked separately from the character's own facing below.
             if (_input.move != Vector2.zero)
             {
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
                                   _mainCamera.transform.eulerAngles.y;
-                float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
-                    RotationSmoothTime);
-
-                // rotate to face input direction relative to camera position
-                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             }
 
+            // The character always faces where the camera looks, moving or not - needed so aiming
+            // (and first person) actually lines up with the body instead of only turning while
+            // walking.
+            float facingRotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _mainCamera.transform.eulerAngles.y,
+                ref _rotationVelocity, RotationSmoothTime);
+            transform.rotation = Quaternion.Euler(0.0f, facingRotation, 0.0f);
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-            // move the player
+            // move the player (input-driven movement plus any momentum carried in from a portal fling)
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+                             _externalVelocity * Time.deltaTime +
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+            // bleed off portal momentum once grounded again so normal input control resumes
+            if (Grounded && _externalVelocity.sqrMagnitude > 0.0f)
+            {
+                _externalVelocity = Vector3.MoveTowards(_externalVelocity, Vector3.zero,
+                    PortalVelocityDamping * Time.deltaTime);
+            }
 
             // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+
+                // Local-space move velocity for a directional blend tree - X is strafe
+                // (left/right), Z is forward/back, both relative to the character's own facing
+                // (which now always matches the camera, since Move() rotates transform to it
+                // above).
+                Vector3 localVelocity = transform.InverseTransformDirection(targetDirection.normalized * _speed);
+                _animator.SetFloat(_animIDVelocityX, localVelocity.x);
+                _animator.SetFloat(_animIDVelocityZ, localVelocity.z);
             }
         }
 

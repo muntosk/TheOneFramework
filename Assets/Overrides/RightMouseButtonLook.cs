@@ -1,25 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace StarterAssets {
 
+    // Look now always follows the mouse (no right-click hold needed), so the cursor just stays
+    // locked the whole time instead of toggling based on the right mouse button.
     public class RightMouseButtonLook : MonoBehaviour
     {
-        private bool currentMouseState = true;
-        void Update() {
-            var newMouseState = Mouse.current.rightButton.isPressed;
-            if (newMouseState != currentMouseState) {
-                if (newMouseState) {
-                    Cursor.lockState = CursorLockMode.Locked;
-                } else {
-                    Cursor.lockState = CursorLockMode.None;
-                }
-                currentMouseState = newMouseState;
-            }  
+        private void Start()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
         }
-
     }
 
 }
