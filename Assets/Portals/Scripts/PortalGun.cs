@@ -23,6 +23,7 @@ namespace TheOneFramework.Portals
         private float maxDistance = 250.0f;
 
         private StarterAssetsInputs input;
+        private PlayerCarry carry;
 
         private bool firePortal1Held;
         private bool firePortal2Held;
@@ -30,15 +31,20 @@ namespace TheOneFramework.Portals
         private void Awake()
         {
             input = GetComponent<StarterAssetsInputs>();
+            carry = GetComponent<PlayerCarry>();
         }
 
         private void Update()
         {
-            if (input.firePortal1 && !firePortal1Held)
+            // Block portal firing while carrying something so LMB is free to launch the carried
+            // object instead (see PlayerCarry.Launch()).
+            bool canFire = carry == null || !carry.IsCarrying;
+
+            if (canFire && input.firePortal1 && !firePortal1Held)
             {
                 FirePortal(0, aimCamera.transform.position, aimCamera.transform.forward, maxDistance);
             }
-            else if (input.firePortal2 && !firePortal2Held)
+            else if (canFire && input.firePortal2 && !firePortal2Held)
             {
                 FirePortal(1, aimCamera.transform.position, aimCamera.transform.forward, maxDistance);
             }

@@ -1,5 +1,6 @@
  using UnityEngine;
-#if ENABLE_INPUT_SYSTEM 
+using Unity.Cinemachine;
+#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
 
@@ -75,6 +76,12 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
+        [Tooltip("The vcam this player uses, so its 3rd-person arm can be pulled in while looking up (see UpdateCameraArmForPitch)")]
+        public CinemachineVirtualCamera FollowCamera;
+
+        [Tooltip("Pitch (degrees) at which the camera arm starts pulling in toward the player's head. Below this, the arm is untouched; it reaches fully pulled-in at TopClamp.")]
+        public float LookUpPullInStartAngle = 40.0f;
+
         [Header("Portals")]
         [Tooltip("How quickly momentum gained from a portal fling bleeds off once grounded again")]
         public float PortalVelocityDamping = 6.0f;
@@ -86,6 +93,10 @@ namespace StarterAssets
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
+        private Cinemachine3rdPersonFollow _thirdPersonFollow;
+        private Vector3 _defaultShoulderOffset;
+        private float _defaultVerticalArmLength;
+        private float _defaultCameraDistance;
 
         // player
         private float _speed;
@@ -160,6 +171,18 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+
+            if (FollowCamera != null)
+            {
+                _thirdPersonFollow = FollowCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
+            }
+
+            if (_thirdPersonFollow != null)
+            {
+                _defaultShoulderOffset = _thirdPersonFollow.ShoulderOffset;
+                _defaultVerticalArmLength = _thirdPersonFollow.VerticalArmLength;
+                _defaultCameraDistance = _thirdPersonFollow.CameraDistance;
+            }
         }
 
         // Defining this (even empty) forces Unity to route root motion through here instead of
@@ -240,6 +263,30 @@ namespace StarterAssets
             // Cinemachine will follow this target
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
                 _cinemachineTargetYaw, 0.0f);
+
+            UpdateCameraArmForPitch();
+        }
+
+        // The 3rd-person arm (shoulder offset + vertical arm + distance behind the target) is
+        // measured relative to the target's own forward direction. As pitch approaches straight up,
+        // "behind" starts to mean "underneath", so the arm would swing the camera into the floor.
+        // Shrinking it toward zero while looking steeply up keeps the camera near the player's head
+        // instead - the same trick most third-person games use for a near-vertical look.
+        private void UpdateCameraArmForPitch()
+        {
+            if (_thirdPersonFollow == null)
+            {
+                return;
+            }
+
+            float pullInRange = TopClamp - LookUpPullInStartAngle;
+            float pullInFactor = pullInRange > 0.0f
+                ? Mathf.Clamp01((_cinemachineTargetPitch - LookUpPullInStartAngle) / pullInRange)
+                : 0.0f;
+
+            _thirdPersonFollow.ShoulderOffset = Vector3.Lerp(_defaultShoulderOffset, Vector3.zero, pullInFactor);
+            _thirdPersonFollow.VerticalArmLength = Mathf.Lerp(_defaultVerticalArmLength, 0.0f, pullInFactor);
+            _thirdPersonFollow.CameraDistance = Mathf.Lerp(_defaultCameraDistance, 0.1f, pullInFactor);
         }
 
         private void Move()

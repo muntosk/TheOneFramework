@@ -18,6 +18,7 @@ namespace TheOneFramework.Portals
 
         private Portal inPortal;
         private Portal outPortal;
+        private Collider wallCollider;
 
         private new Rigidbody rigidbody;
         protected new Collider collider;
@@ -71,6 +72,7 @@ namespace TheOneFramework.Portals
         {
             this.inPortal = inPortal;
             this.outPortal = outPortal;
+            this.wallCollider = wallCollider;
 
             Physics.IgnoreCollision(collider, wallCollider);
 
@@ -88,6 +90,37 @@ namespace TheOneFramework.Portals
             {
                 cloneObject.SetActive(false);
             }
+        }
+
+        // See PlayerPortalTraveller.Update() for why this re-checks every frame instead of just
+        // ignoring the wall for as long as the object is anywhere inside the portal trigger volume:
+        // a wall is usually one single collider, so collision can only be turned fully on/off for
+        // it as a whole - this keeps that "off" state bounded to the portal's own rectangle.
+        private void Update()
+        {
+            if (inPortal == null)
+            {
+                return;
+            }
+
+            bool withinPortalRect = IsWithinPortalRect(inPortal, transform.position);
+            Physics.IgnoreCollision(collider, wallCollider, withinPortalRect);
+        }
+
+        private static bool IsWithinPortalRect(Portal portal, Vector3 worldPos)
+        {
+            Transform t = portal.transform;
+            Vector3 offset = worldPos - t.position;
+
+            float horiz = Vector3.Dot(offset, t.right);
+            float vert = Vector3.Dot(offset, t.up);
+
+            // A unit Quad's local bounds are +-0.5, so lossyScale directly gives world half-size
+            // (same assumption Portal.cs itself uses for HalfWidth/HalfHeight).
+            float halfWidth = t.lossyScale.x * 0.5f;
+            float halfHeight = t.lossyScale.y * 0.5f;
+
+            return Mathf.Abs(horiz) <= halfWidth && Mathf.Abs(vert) <= halfHeight;
         }
 
         public virtual void Warp()

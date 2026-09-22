@@ -42,6 +42,39 @@ namespace TheOneFramework.Portals
             Physics.IgnoreCollision(controller, wallCollider, false);
         }
 
+        // A wall is usually one single big collider, so Physics.IgnoreCollision can only turn its
+        // collision fully on or off for the whole thing - there's no way to disable just the part
+        // behind the portal. So instead of ignoring the wall for as long as you're anywhere inside
+        // the (deliberately a bit oversized) portal trigger volume, re-check every frame whether
+        // you're actually within the portal's own rectangle and only ignore collision then. Step
+        // outside that rectangle (but still within the trigger) and the wall solidifies again.
+        private void Update()
+        {
+            if (inPortal == null)
+            {
+                return;
+            }
+
+            bool withinPortalRect = IsWithinPortalRect(inPortal, transform.position);
+            Physics.IgnoreCollision(controller, wallCollider, withinPortalRect);
+        }
+
+        private static bool IsWithinPortalRect(Portal portal, Vector3 worldPos)
+        {
+            Transform t = portal.transform;
+            Vector3 offset = worldPos - t.position;
+
+            float horiz = Vector3.Dot(offset, t.right);
+            float vert = Vector3.Dot(offset, t.up);
+
+            // A unit Quad's local bounds are +-0.5, so lossyScale directly gives world half-size
+            // (same assumption Portal.cs itself uses for HalfWidth/HalfHeight).
+            float halfWidth = t.lossyScale.x * 0.5f;
+            float halfHeight = t.lossyScale.y * 0.5f;
+
+            return Mathf.Abs(horiz) <= halfWidth && Mathf.Abs(vert) <= halfHeight;
+        }
+
         public void Warp()
         {
             Transform inTransform = inPortal.transform;
