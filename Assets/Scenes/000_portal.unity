@@ -6042,8 +6042,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   CinemachineCameraTarget: {fileID: 1952320074}
-  TopClamp: 90
-  BottomClamp: -30
+  TopClamp: 65
+  BottomClamp: -70
   CameraAngleOverride: 0
   LockCameraPosition: 0
   FollowCamera: {fileID: 561563991}
@@ -6104,6 +6104,10 @@ MonoBehaviour:
     m_Bits: 255
   pickupRange: 6
   launchForce: 12
+  worldLayerMask:
+    serializedVersion: 2
+    m_Bits: 255
+  heldClearanceRadius: 0.4
 --- !u!1 &2007668840
 GameObject:
   m_ObjectHideFlags: 0
