@@ -50,6 +50,14 @@ namespace TheOneFramework.Portals
 
         public bool IsCarrying => held != null;
 
+        public void DestroyHeld()
+        {
+            if (IsCarrying)
+            {
+                Destroy(held.gameObject);
+            }
+        }
+
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
