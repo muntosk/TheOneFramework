@@ -8,6 +8,7 @@ TagManager:
   - SpawnPoint
   - RespawnPlayers
   - Portal
+  - Fizzler
   layers:
   - Default
   - TransparentFX

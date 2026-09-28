@@ -44,7 +44,7 @@ class InventoryItemScanner
     {
         var inventoryItems = new List<InventoryItemDefinition>();
 
-        string[] guids = AssetDatabase.FindAssets("t:InventoryItemDefinition", new[] { "Assets/InventoryItems" });
+        string[] guids = AssetDatabase.FindAssets("t:InventoryItemDefinition", new[] { "Assets/Demo/InventoryItems" });
         foreach (string guid in guids)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
