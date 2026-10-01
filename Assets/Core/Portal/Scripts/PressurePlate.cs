@@ -47,6 +47,8 @@ namespace TheOneFramework.Portals
 
         private void Update()
         {
+            PruneStaleWeights();
+
             if (plateTop == null)
             {
                 return;
@@ -54,6 +56,27 @@ namespace TheOneFramework.Portals
 
             targetLocalPos = IsPressed ? pressedLocalPos : raisedLocalPos;
             plateTop.localPosition = Vector3.MoveTowards(plateTop.localPosition, targetLocalPos, moveSpeed * Time.deltaTime);
+        }
+
+        // Unity never calls OnTriggerExit for a collider that gets disabled or destroyed while
+        // still overlapping the trigger (e.g. PlayerCarry disables a Carryable's Collider the
+        // moment it's picked up off a plate), so weightsOnPlate can otherwise hold a stale entry
+        // forever and leave the plate permanently pressed. Sweep those out every frame instead.
+        private void PruneStaleWeights()
+        {
+            if (weightsOnPlate.Count == 0)
+            {
+                return;
+            }
+
+            bool wasPressed = IsPressed;
+            weightsOnPlate.RemoveWhere(other => other == null || !other.enabled);
+
+            if (wasPressed && !IsPressed)
+            {
+                Debug.Log($"[PressurePlate] {name} RELEASED");
+                onReleased.Invoke();
+            }
         }
 
         private void OnTriggerEnter(Collider other)
