@@ -22,6 +22,13 @@ namespace TheOneFramework.Portals
         [SerializeField]
         private float maxDistance = 250.0f;
 
+        [Tooltip("When ticked, portals only stick to colliders with a PortalSurface component (on themselves or a parent). When unticked, anything in the layer mask works unless its PortalSurface says otherwise.")]
+        [SerializeField]
+        private bool requirePortalSurface = false;
+
+        // Surfaces tilted less than ~45 degrees from horizontal count as floor/ceiling.
+        private const float floorCeilingThreshold = 0.7f;
+
         private StarterAssetsInputs input;
         private PlayerCarry carry;
 
@@ -38,7 +45,7 @@ namespace TheOneFramework.Portals
         {
             // Block portal firing while carrying something so LMB is free to launch the carried
             // object instead (see PlayerCarry.Launch()).
-            bool canFire = carry == null || !carry.IsCarrying;
+            bool canFire = carry == null || (!carry.IsCarrying && !carry.LaunchedThisFrame);
 
             if (canFire && input.firePortal1 && !firePortal1Held)
             {
@@ -89,30 +96,47 @@ namespace TheOneFramework.Portals
                 return;
             }
 
-            // Orient the portal according to camera look direction and surface direction.
-            var cameraRotation = aimCamera.transform.rotation;
-            var portalRight = cameraRotation * Vector3.right;
+            var surface = hit.collider.GetComponentInParent<PortalSurface>();
+            if (surface != null ? !surface.AllowPortals : requirePortalSurface)
+            {
+                Debug.Log($"[PortalGun] FirePortal({portalID}) rejected - {hit.collider.name} is not a portal surface");
+                return;
+            }
 
-            if (Mathf.Abs(portalRight.x) >= Mathf.Abs(portalRight.z))
-            {
-                portalRight = (portalRight.x >= 0) ? Vector3.right : -Vector3.right;
-            }
-            else
-            {
-                portalRight = (portalRight.z >= 0) ? Vector3.forward : -Vector3.forward;
-            }
+            Vector3 placePoint = (surface != null && surface.SnapToCenter)
+                ? surface.GetSnappedPoint(hit.collider, hit.point, hit.normal)
+                : hit.point;
 
             var portalForward = -hit.normal;
-            var portalUp = -Vector3.Cross(portalRight, portalForward);
-            var portalRotation = Quaternion.LookRotation(portalForward, portalUp);
+            var portalRotation = Quaternion.LookRotation(portalForward, GetPortalUp(hit.normal, dir));
 
-            bool wasPlaced = portals.Portals[portalID].PlacePortal(hit.collider, hit.point, portalRotation);
+            bool wasPlaced = portals.Portals[portalID].PlacePortal(hit.collider, placePoint, portalRotation);
             Debug.Log($"[PortalGun] PlacePortal({portalID}) -> wasPlaced={wasPlaced}");
 
             if (wasPlaced && crosshair != null)
             {
                 crosshair.SetPortalPlaced(portalID, true);
             }
+        }
+
+        // Same rules as Portal 2: wall portals always stand upright, while floor/ceiling portals
+        // point their top along the shot direction. This used to snap the camera's right vector
+        // to a world axis instead, which tilted portals on angled walls and broke the rotation
+        // entirely when that axis ended up parallel to the wall normal (steep shots at X-facing walls).
+        private static Vector3 GetPortalUp(Vector3 surfaceNormal, Vector3 shotDir)
+        {
+            bool isFloorOrCeiling = Mathf.Abs(Vector3.Dot(surfaceNormal, Vector3.up)) > floorCeilingThreshold;
+            Vector3 reference = isFloorOrCeiling ? shotDir : Vector3.up;
+            Vector3 up = Vector3.ProjectOnPlane(reference, surfaceNormal);
+
+            // Shooting dead straight down/up leaves nothing to project - fall back to any
+            // horizontal direction lying in the surface.
+            if (up.sqrMagnitude < 0.0001f)
+            {
+                up = Vector3.ProjectOnPlane(Vector3.forward, surfaceNormal);
+            }
+
+            return up.normalized;
         }
     }
 }

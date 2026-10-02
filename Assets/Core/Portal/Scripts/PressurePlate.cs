@@ -11,6 +11,10 @@ namespace TheOneFramework.Portals
     [RequireComponent(typeof(Collider))]
     public class PressurePlate : MonoBehaviour
     {
+        [Tooltip("What type of weight is allowed to activate this specific pressure plate?")]
+        [SerializeField]
+        private WeightType requiredWeight = WeightType.All;
+        
         [Tooltip("Optional - the part of the button that visually sinks down while pressed (e.g. a " +
             "child cylinder sitting on top of the base). Leave empty for a plate with no moving part.")]
         [SerializeField]
@@ -79,6 +83,27 @@ namespace TheOneFramework.Portals
             }
         }
 
+        private bool IsWeight(Collider other)
+        {
+            bool hasPhysics = other.GetComponentInParent<CharacterController>() != null
+                              || other.GetComponentInParent<Rigidbody>() != null;
+
+            if (!hasPhysics) return false;
+
+            // If its on All then might as well just return true instantly to not execute any more code
+            if (requiredWeight == WeightType.All)
+            {
+                return true;
+            }
+            
+            if (other.GetComponentInParent<PressurePlateWeight>() is PressurePlateWeight weightComp)
+            {
+                return weightComp.WeightType == requiredWeight;
+            }
+
+            return false;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (!IsWeight(other))
@@ -111,15 +136,6 @@ namespace TheOneFramework.Portals
                 Debug.Log($"[PressurePlate] {name} RELEASED");
                 onReleased.Invoke();
             }
-        }
-
-        // Weight-bearing = the player's CharacterController or any physics prop's Rigidbody
-        // (Carryable cubes always have one, see Carryable.cs). Checked via GetComponentInParent so
-        // this keeps working regardless of which child collider actually touches the trigger.
-        private static bool IsWeight(Collider other)
-        {
-            return other.GetComponentInParent<CharacterController>() != null
-                || other.GetComponentInParent<Rigidbody>() != null;
         }
     }
 }

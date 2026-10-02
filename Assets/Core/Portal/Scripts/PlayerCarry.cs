@@ -50,6 +50,12 @@ namespace TheOneFramework.Portals
 
         public bool IsCarrying => held != null;
 
+        // Unity doesn't guarantee whether this Update() or PortalGun's runs first, so on the frame
+        // LMB launches the held object, PortalGun could already see IsCarrying == false and fire a
+        // portal from the very same click. PortalGun checks this too to block that frame.
+        private int launchFrame = -1;
+        public bool LaunchedThisFrame => launchFrame == Time.frameCount;
+
         public void DestroyHeld()
         {
             if (IsCarrying)
@@ -190,6 +196,7 @@ namespace TheOneFramework.Portals
 
         private void Launch()
         {
+            launchFrame = Time.frameCount;
             Release(controller.velocity + aimCamera.transform.forward * launchForce);
         }
 

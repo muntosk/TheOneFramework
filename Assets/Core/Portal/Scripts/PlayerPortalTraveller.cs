@@ -13,6 +13,10 @@ namespace TheOneFramework.Portals
     {
         private static readonly Quaternion halfTurn = Quaternion.Euler(0.0f, 180.0f, 0.0f);
 
+        [Tooltip("How far a wall portal's bottom edge may sit above your feet and still let you walk in without jumping - like stepping over a small lip.")]
+        [SerializeField]
+        private float walkInHeight = 0.25f;
+
         private CharacterController controller;
         private ThirdPersonControllerFixed thirdPersonController;
 
@@ -55,7 +59,12 @@ namespace TheOneFramework.Portals
                 return;
             }
 
-            bool withinPortalRect = IsWithinPortalRect(inPortal, transform.position);
+            // Check a point a little above the feet rather than transform.position itself: the
+            // pivot sits exactly at the feet, so for a wall portal whose bottom edge was even
+            // slightly above the floor the feet were "below the portal" and the wall stayed solid
+            // until you jumped. Checking the capsule's middle instead was far too forgiving.
+            Vector3 checkPoint = transform.position + Vector3.up * walkInHeight;
+            bool withinPortalRect = IsWithinPortalRect(inPortal, checkPoint);
             Physics.IgnoreCollision(controller, wallCollider, withinPortalRect);
         }
 

@@ -67,8 +67,6 @@ namespace TheOneFramework.Portals
                 float z = transform.InverseTransformPoint(traveller.Transform.position).z;
                 float sinceLastWarp = Time.time - (lastWarpTime.TryGetValue(traveller, out var t) ? t : -warpCooldown);
 
-                Debug.Log($"[Portal] {name} tracking {traveller.Transform.name} z={z:F3}");
-
                 if (z > 0.0f && sinceLastWarp > warpCooldown)
                 {
                     lastWarpTime[traveller] = Time.time;
@@ -136,8 +134,21 @@ namespace TheOneFramework.Portals
         // +-0.5, so lossyScale directly gives world half-size) instead of hardcoded numbers -
         // those used to assume a fixed 2x4 portal regardless of how it was actually scaled,
         // which made placement fail unpredictably for a differently-sized portal.
-        private float HalfWidth => transform.lossyScale.x * 0.5f;
-        private float HalfHeight => transform.lossyScale.y * 0.5f;
+        // The outline quad is bigger than the portal itself (it's a child scaled 1.2 x 1.1), so
+        // size placement off the outline when there is one - otherwise the portal fits but its
+        // coloured border hangs past the surface's edge.
+        private Vector3 PlacementScale => outlineRenderer != null ? outlineRenderer.transform.lossyScale : transform.lossyScale;
+        private float HalfWidth => PlacementScale.x * 0.5f;
+        private float HalfHeight => PlacementScale.y * 0.5f;
+
+        // testTransform is a child of this (scaled) portal, so its TransformPoint/TransformVector
+        // would stretch every offset by that scale again - doubling all vertical offsets for a
+        // 1x2 portal, which used to stop portals from getting within ~1m of a surface's top or
+        // bottom edge. HalfWidth/HalfHeight are already in world units, so only rotate them.
+        private Vector3 TestPoint(Vector3 localOffset)
+        {
+            return testTransform.position + testTransform.rotation * localOffset;
+        }
         // Smaller = allowed to sit closer to a surface's edge (e.g. flush with a floor seam),
         // at the cost of a bit less protection against the portal overhanging past that edge.
         private const float edgeMargin = 0.02f;
@@ -173,12 +184,14 @@ namespace TheOneFramework.Portals
             for (int i = 0; i < 4; ++i)
             {
                 RaycastHit hit;
-                Vector3 raycastPos = testTransform.TransformPoint(testPoints[i]);
+                Vector3 raycastPos = TestPoint(testPoints[i]);
                 Vector3 raycastDir = testTransform.TransformDirection(testDirs[i]);
 
+                // This edge already sits over the surface - move on to check the next edge
+                // (this used to `break`, which skipped every remaining edge once one was fine).
                 if (Physics.CheckSphere(raycastPos, 0.05f, placementMask))
                 {
-                    break;
+                    continue;
                 }
                 else if (Physics.Raycast(raycastPos, raycastDir, out hit, testDists[i], placementMask))
                 {
@@ -206,7 +219,7 @@ namespace TheOneFramework.Portals
             for (int i = 0; i < 4; ++i)
             {
                 RaycastHit hit;
-                Vector3 raycastPos = testTransform.TransformPoint(0.0f, 0.0f, -0.1f);
+                Vector3 raycastPos = TestPoint(new Vector3(0.0f, 0.0f, -0.1f));
                 Vector3 raycastDir = testTransform.TransformDirection(testDirs[i]);
 
                 if (Physics.Raycast(raycastPos, raycastDir, out hit, testDists[i], placementMask))
@@ -227,14 +240,14 @@ namespace TheOneFramework.Portals
 
             var checkPositions = new Vector3[]
             {
-                testTransform.position + testTransform.TransformVector(new Vector3( 0.0f,  0.0f, -0.1f)),
+                TestPoint(new Vector3( 0.0f,  0.0f, -0.1f)),
 
-                testTransform.position + testTransform.TransformVector(new Vector3(-halfWidth, -halfHeight, -0.1f)),
-                testTransform.position + testTransform.TransformVector(new Vector3(-halfWidth,  halfHeight, -0.1f)),
-                testTransform.position + testTransform.TransformVector(new Vector3( halfWidth, -halfHeight, -0.1f)),
-                testTransform.position + testTransform.TransformVector(new Vector3( halfWidth,  halfHeight, -0.1f)),
+                TestPoint(new Vector3(-halfWidth, -halfHeight, -0.1f)),
+                TestPoint(new Vector3(-halfWidth,  halfHeight, -0.1f)),
+                TestPoint(new Vector3( halfWidth, -halfHeight, -0.1f)),
+                TestPoint(new Vector3( halfWidth,  halfHeight, -0.1f)),
 
-                testTransform.TransformVector(new Vector3(0.0f, 0.0f, 0.2f))
+                testTransform.rotation * new Vector3(0.0f, 0.0f, 0.2f)
             };
 
             // Ensure the portal does not intersect walls.

@@ -13,7 +13,9 @@ GameObject:
   - component: {fileID: 5262422094777966664}
   - component: {fileID: 713962350325637622}
   - component: {fileID: 3027750202171409992}
+  - component: {fileID: 9048971540568971030}
   - component: {fileID: 8727865416965312133}
+  - component: {fileID: -8316606546724442654}
   m_Layer: 0
   m_Name: metal_box_reference
   m_TagString: Fizzler
@@ -142,6 +144,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 35.632164, y: 35.631317, z: 35.631912}
   m_Center: {x: 0, y: 0.00017356873, z: -0.00012588501}
+--- !u!114 &9048971540568971030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711498011744669733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04fc072b1eaaf7b96a58971a959b1b79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TheOneFramework.Portals.PortalableObject
 --- !u!114 &8727865416965312133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,3 +168,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e1535e18f05475190addfb08b281bbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TheOneFramework.Portals.Carryable
+--- !u!114 &-8316606546724442654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8711498011744669733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cc432f8b48b1e0c885f6fc8d0f76c38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TheOneFramework.Portals.PressurePlateWeight
+  weightType: 2
