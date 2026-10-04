@@ -33,6 +33,9 @@ namespace TheOneFramework.Portals
         public bool IsPlaced { get; private set; } = false;
         private Collider wallCollider;
 
+        // Portals that are currently placed (a portal's GameObject is only active while placed).
+        public static readonly List<Portal> ActivePortals = new List<Portal>();
+
         // Components.
         public Renderer Renderer { get; private set; }
         private new BoxCollider collider;
@@ -50,6 +53,16 @@ namespace TheOneFramework.Portals
             lastWarpTime.Clear();
         }
 
+        private void OnEnable()
+        {
+            ActivePortals.Add(this);
+        }
+
+        private void OnDisable()
+        {
+            ActivePortals.Remove(this);
+        }
+
         private void Start()
         {
             outlineRenderer.material.SetColor("_OutlineColour", PortalColour);
@@ -64,7 +77,7 @@ namespace TheOneFramework.Portals
             for (int i = portalObjects.Count - 1; i >= 0; --i)
             {
                 var traveller = portalObjects[i];
-                float z = transform.InverseTransformPoint(traveller.Transform.position).z;
+                float z = transform.InverseTransformPoint(traveller.WarpCheckPoint).z;
                 float sinceLastWarp = Time.time - (lastWarpTime.TryGetValue(traveller, out var t) ? t : -warpCooldown);
 
                 if (z > 0.0f && sinceLastWarp > warpCooldown)

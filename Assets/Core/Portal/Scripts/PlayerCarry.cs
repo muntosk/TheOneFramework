@@ -25,7 +25,7 @@ namespace TheOneFramework.Portals
         private LayerMask carryLayerMask = ~0;
 
         [SerializeField]
-        private float pickupRange = 3.0f;
+        private float pickupRange = 6.0f;
 
         [SerializeField]
         private float launchForce = 12.0f;

@@ -11,6 +11,7 @@ namespace TheOneFramework.Portals
     public class PortalableObject : MonoBehaviour, IPortalTraveller
     {
         public Transform Transform => transform;
+        public Vector3 WarpCheckPoint => transform.position;
 
         private GameObject cloneObject;
 

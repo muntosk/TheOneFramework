@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TheOneFramework.Portals
 {
@@ -15,22 +16,32 @@ namespace TheOneFramework.Portals
         {
             public Transform panelTransform;
 
-            [Tooltip("Local-space offset (relative to the panel's own closed position) it slides to when open.")]
-            public Vector3 openLocalOffset = new Vector3(-1.0f, 0.0f, 0.0f);
+            [FormerlySerializedAs("openLocalOffset")] [Tooltip("Local-space offset (relative to the panel's own closed position) it slides to when open.")]
+            public Vector3 openLocalPosOffset = new Vector3(-1.0f, 0.0f, 0.0f);
+            [Tooltip("Local rotation in degrees (relative to the panel's own closed rotation) it turns to when open. Rotates around the panel's pivot, so put hinged panels under an empty parent at the hinge.")]
+            public Vector3 openLocalRotOffset = Vector3.zero;
 
+            [NonSerialized] public Quaternion closedLocalRot;
+            [NonSerialized] public Quaternion openLocalRot;
+            [NonSerialized] public Quaternion targetLocalRot;
+            
             [NonSerialized] public Vector3 closedLocalPos;
             [NonSerialized] public Vector3 openLocalPos;
             [NonSerialized] public Vector3 targetLocalPos;
         }
 
         [SerializeField]
-        private Panel leftPanel = new Panel { openLocalOffset = new Vector3(-1.0f, 0.0f, 0.0f) };
+        private Panel leftPanel = new Panel { openLocalPosOffset = new Vector3(-1.0f, 0.0f, 0.0f) };
 
         [SerializeField]
-        private Panel rightPanel = new Panel { openLocalOffset = new Vector3(1.0f, 0.0f, 0.0f) };
+        private Panel rightPanel = new Panel { openLocalPosOffset = new Vector3(1.0f, 0.0f, 0.0f) };
 
         [SerializeField]
         private float moveSpeed = 2.0f;
+
+        [Tooltip("Degrees per second for panels that rotate open.")]
+        [SerializeField]
+        private float rotateSpeed = 90.0f;
 
         private void Awake()
         {
@@ -45,19 +56,24 @@ namespace TheOneFramework.Portals
                 return;
             }
 
+            panel.closedLocalRot = panel.panelTransform.localRotation;
+            panel.openLocalRot = panel.closedLocalRot * Quaternion.Euler(panel.openLocalRotOffset);
+            panel.targetLocalRot = panel.closedLocalRot;
+            
             panel.closedLocalPos = panel.panelTransform.localPosition;
-            panel.openLocalPos = panel.closedLocalPos + panel.openLocalOffset;
+            panel.openLocalPos = panel.closedLocalPos + panel.openLocalPosOffset;
             panel.targetLocalPos = panel.closedLocalPos;
         }
 
         private void Update()
         {
             float maxDelta = moveSpeed * Time.deltaTime;
-            MovePanel(leftPanel, maxDelta);
-            MovePanel(rightPanel, maxDelta);
+            float maxDegrees = rotateSpeed * Time.deltaTime;
+            MovePanel(leftPanel, maxDelta, maxDegrees);
+            MovePanel(rightPanel, maxDelta, maxDegrees);
         }
 
-        private static void MovePanel(Panel panel, float maxDelta)
+        private static void MovePanel(Panel panel, float maxDelta, float maxDegrees)
         {
             if (panel?.panelTransform == null)
             {
@@ -66,8 +82,12 @@ namespace TheOneFramework.Portals
 
             panel.panelTransform.localPosition = Vector3.MoveTowards(
                 panel.panelTransform.localPosition, panel.targetLocalPos, maxDelta);
+            panel.panelTransform.localRotation = Quaternion.RotateTowards(
+                panel.panelTransform.localRotation, panel.targetLocalRot, maxDegrees);
         }
 
+        // ContextMenu: also callable from the component's ⋮ menu in the Inspector, for testing in Play mode.
+        [ContextMenu("Open")]
         public void Open()
         {
             Debug.Log($"[Door] {name} OPEN");
@@ -75,6 +95,7 @@ namespace TheOneFramework.Portals
             SetTarget(rightPanel, true);
         }
 
+        [ContextMenu("Close")]
         public void Close()
         {
             Debug.Log($"[Door] {name} CLOSE");
@@ -90,6 +111,7 @@ namespace TheOneFramework.Portals
             }
 
             panel.targetLocalPos = open ? panel.openLocalPos : panel.closedLocalPos;
+            panel.targetLocalRot = open ? panel.openLocalRot : panel.closedLocalRot;
         }
     }
 }

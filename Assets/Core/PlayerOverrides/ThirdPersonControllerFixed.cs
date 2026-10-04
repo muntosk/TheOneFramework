@@ -16,11 +16,8 @@ namespace StarterAssets
     public class ThirdPersonControllerFixed : MonoBehaviour
     {
         [Header("Player")]
-        [Tooltip("Move speed of the character in m/s")]
-        public float MoveSpeed = 2.0f;
-
-        [Tooltip("Sprint speed of the character in m/s")]
-        public float SprintSpeed = 5.335f;
+        [Tooltip("Move speed of the character in m/s. Portal 2 walks at ~175 units/s, about 4.5 m/s; there is no sprint.")]
+        public float MoveSpeed = 4.5f;
 
         [Tooltip("How fast the character turns to face movement direction")]
         [Range(0.0f, 0.3f)]
@@ -42,7 +39,7 @@ namespace StarterAssets
 
         [Space(10)]
         [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-        public float JumpTimeout = 0.50f;
+        public float JumpTimeout = 0.3f;
 
         [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
         public float FallTimeout = 0.15f;
@@ -65,10 +62,10 @@ namespace StarterAssets
         public GameObject CinemachineCameraTarget;
 
         [Tooltip("How far in degrees can you move the camera up")]
-        public float TopClamp = 70.0f;
+        public float TopClamp = 65.0f;
 
         [Tooltip("How far in degrees can you move the camera down")]
-        public float BottomClamp = -30.0f;
+        public float BottomClamp = -70.0f;
 
         [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
         public float CameraAngleOverride = 0.0f;
@@ -90,6 +87,8 @@ namespace StarterAssets
         // decays once grounded so normal input-driven movement takes back over
         private Vector3 _externalVelocity;
 
+        private readonly Collider[] _groundHits = new Collider[16];
+
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -105,6 +104,8 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
+        private Vector3 _moveVelocity;
+        public float airAcceleration = 5;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -151,6 +152,10 @@ namespace StarterAssets
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
+
+            // portal-able walls/floors live on their own layer; without this the grounded check
+            // doesn't see them, so you can't jump and stay stuck in the fall animation on them
+            GroundLayers |= LayerMask.GetMask("PortalSurface");
         }
 
         private void Start()
@@ -218,6 +223,13 @@ namespace StarterAssets
             _cinemachineTargetYaw += yawDelta;
         }
 
+        // Horizontal nudge on top of input movement, e.g. PlayerPortalTraveller funneling you into
+        // a floor portal. Bleeds off once grounded, same as portal momentum.
+        public void AddExternalVelocity(Vector3 velocity)
+        {
+            _externalVelocity += new Vector3(velocity.x, 0.0f, velocity.z);
+        }
+
         private void AssignAnimationIDs()
         {
             _animIDSpeed = Animator.StringToHash("Speed");
@@ -234,8 +246,21 @@ namespace StarterAssets
             // set sphere position, with offset
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
                 transform.position.z);
-            Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
+            // Physics queries don't respect Physics.IgnoreCollision, so a wall/floor that a portal
+            // has made passable would still count as ground here - you'd stand "on" a floor portal
+            // and slowly sink through it. Skip any collider we're currently ignoring.
+            int hitCount = Physics.OverlapSphereNonAlloc(spherePosition, GroundedRadius, _groundHits, GroundLayers,
                 QueryTriggerInteraction.Ignore);
+            Grounded = false;
+            for (int i = 0; i < hitCount; i++)
+            {
+                Collider hit = _groundHits[i];
+                if (hit != _controller && !Physics.GetIgnoreCollision(_controller, hit))
+                {
+                    Grounded = true;
+                    break;
+                }
+            }
 
             // update animator if using character
             if (_hasAnimator)
@@ -291,8 +316,8 @@ namespace StarterAssets
 
         private void Move()
         {
-            // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
+            // no sprint, like Portal 2 - always the one move speed
+            float targetSpeed = MoveSpeed;
 
             // // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
 
@@ -320,7 +345,7 @@ namespace StarterAssets
             // }
             // else
             // {
-                //_speed = targetSpeed;
+            //_speed = targetSpeed;
             // }
             _speed = targetSpeed * inputMagnitude;
 
@@ -348,10 +373,28 @@ namespace StarterAssets
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
+
+            // Save the horizontal direction
+            if (Grounded) {
+                _moveVelocity = targetDirection * _speed; 
+            }
+            else
+            {
+_moveVelocity = Vector3.MoveTowards(_moveVelocity, targetDirection * _speed, airAcceleration * Time.deltaTime);
+
+            }
+
             // move the player (input-driven movement plus any momentum carried in from a portal fling)
-            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+            _controller.Move(_moveVelocity * Time.deltaTime +
                              _externalVelocity * Time.deltaTime +
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+            // bumped our head: kill upward speed, otherwise we keep pushing into the ceiling
+            // until gravity eventually wins
+            if ((_controller.collisionFlags & CollisionFlags.Above) != 0 && _verticalVelocity > 0.0f)
+            {
+                _verticalVelocity = 0.0f;
+            }
 
             // bleed off portal momentum once grounded again so normal input control resumes
             if (Grounded && _externalVelocity.sqrMagnitude > 0.0f)

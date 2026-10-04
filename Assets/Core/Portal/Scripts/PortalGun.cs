@@ -29,6 +29,10 @@ namespace TheOneFramework.Portals
         // Surfaces tilted less than ~45 degrees from horizontal count as floor/ceiling.
         private const float floorCeilingThreshold = 0.7f;
 
+        // Caps how many portals one shot may pass through, so two portals facing each other
+        // can't bounce the shot back and forth forever.
+        private const int maxPortalPassthroughs = 8;
+
         private StarterAssetsInputs input;
         private PlayerCarry carry;
 
@@ -60,7 +64,7 @@ namespace TheOneFramework.Portals
             firePortal2Held = input.firePortal2;
         }
 
-        private void FirePortal(int portalID, Vector3 pos, Vector3 dir, float distance)
+        private void FirePortal(int portalID, Vector3 pos, Vector3 dir, float distance, int depth = 0)
         {
             if (!Physics.Raycast(pos, dir, out RaycastHit hit, distance, layerMask))
             {
@@ -75,7 +79,8 @@ namespace TheOneFramework.Portals
             {
                 var inPortal = hit.collider.GetComponent<Portal>();
 
-                if (inPortal == null)
+                if (inPortal == null || inPortal.OtherPortal == null || !inPortal.OtherPortal.IsPlaced ||
+                    depth >= maxPortalPassthroughs)
                 {
                     return;
                 }
@@ -90,9 +95,9 @@ namespace TheOneFramework.Portals
                 relativeDir = Quaternion.Euler(0.0f, 180.0f, 0.0f) * relativeDir;
                 dir = outPortal.transform.TransformDirection(relativeDir);
 
-                distance -= Vector3.Distance(pos, hit.point);
+                distance -= hit.distance;
 
-                FirePortal(portalID, pos, dir, distance);
+                FirePortal(portalID, pos, dir, distance, depth + 1);
                 return;
             }
 
