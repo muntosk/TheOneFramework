@@ -21,7 +21,18 @@ namespace StarterAssets
         private CinemachineBrain brain;
         private ThirdPersonControllerFixed thirdPersonController;
         private float thirdPersonFieldOfView;
-        private bool isFirstPerson;
+
+        // Static so it belongs to the class rather than this scene's camera: it survives scene loads,
+        // so the next level (e.g. after a Lift) starts in the same view the player left in.
+        private static bool isFirstPerson;
+
+        // Domain reload is off in this project, so statics would otherwise carry over between
+        // Play sessions in the editor too. Start each Play session in third person again.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            isFirstPerson = false;
+        }
 
         private void Awake()
         {
@@ -29,6 +40,7 @@ namespace StarterAssets
             brain = GetComponent<CinemachineBrain>();
             thirdPersonController = FindFirstObjectByType<ThirdPersonControllerFixed>();
             thirdPersonFieldOfView = cam.fieldOfView;
+            ApplyMode();
         }
 
         private void Update()
@@ -57,6 +69,11 @@ namespace StarterAssets
         public void Toggle()
         {
             isFirstPerson = !isFirstPerson;
+            ApplyMode();
+        }
+
+        private void ApplyMode()
+        {
             brain.enabled = !isFirstPerson;
             cam.fieldOfView = isFirstPerson ? firstPersonFieldOfView : thirdPersonFieldOfView;
         }

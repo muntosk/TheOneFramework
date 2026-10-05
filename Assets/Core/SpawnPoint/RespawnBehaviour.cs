@@ -15,20 +15,35 @@ public class RespawnBehaviour : MonoBehaviour
 
     public float fallThreshold = -10f;
 
+    private bool skipInitialRespawn = false;
+
     void Start()
     {
         if (spawnPoint != null) {
             SetRespawnPoint(spawnPoint);
-            Respawn();
         } else {
             var spawns = GameObject.FindGameObjectsWithTag("SpawnPoint");
             if (spawns.Length > 0)
             {
                 var id = Random.Range(0, spawns.Length);
                 SetRespawnPoint(spawns[id]);
-                Respawn();
             }
         }
+
+        // Still remember the spawn point for falling off the map, just don't teleport there now.
+        if (respawnPoint != null && !skipInitialRespawn) {
+            Debug.Log($"[Respawn] {name} initial teleport to spawn point {respawnPoint.name}");
+            Respawn();
+        }
+    }
+
+    // Called by something that already placed the player at scene start (e.g. an arrival Lift), so
+    // the initial teleport to the spawn point doesn't undo it. Works whether our Start ran before
+    // or after the caller's: the flag covers "not yet", clearing the pending target covers "already".
+    public void KeepCurrentPosition()
+    {
+        skipInitialRespawn = true;
+        teleportationTarget = null;
     }
 
     void Update()

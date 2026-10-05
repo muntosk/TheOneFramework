@@ -223,6 +223,25 @@ namespace StarterAssets
             _cinemachineTargetYaw += yawDelta;
         }
 
+        public float LookYaw => _cinemachineTargetYaw;
+        public float LookPitch => _cinemachineTargetPitch;
+
+        // Points the free-look camera somewhere directly, e.g. after an arrival Lift places the player
+        // in a new scene. Also writes the camera target itself, because Start reads the yaw back from
+        // it and may run after this.
+        public void SetLook(float yaw, float pitch)
+        {
+            _cinemachineTargetYaw = yaw;
+            _cinemachineTargetPitch = pitch;
+            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(pitch + CameraAngleOverride, yaw, 0.0f);
+
+            // Snap to the new spot instead of damping over from wherever the camera was.
+            if (FollowCamera != null)
+            {
+                FollowCamera.PreviousStateIsValid = false;
+            }
+        }
+
         // Horizontal nudge on top of input movement, e.g. PlayerPortalTraveller funneling you into
         // a floor portal. Bleeds off once grounded, same as portal momentum.
         public void AddExternalVelocity(Vector3 velocity)

@@ -24,10 +24,12 @@ namespace TheOneFramework.Portals
             [NonSerialized] public Quaternion closedLocalRot;
             [NonSerialized] public Quaternion openLocalRot;
             [NonSerialized] public Quaternion targetLocalRot;
-            
+
             [NonSerialized] public Vector3 closedLocalPos;
             [NonSerialized] public Vector3 openLocalPos;
             [NonSerialized] public Vector3 targetLocalPos;
+
+            [NonSerialized] public Collider[] colliders;
         }
 
         [SerializeField]
@@ -36,7 +38,9 @@ namespace TheOneFramework.Portals
         [SerializeField]
         private Panel rightPanel = new Panel { openLocalPosOffset = new Vector3(1.0f, 0.0f, 0.0f) };
 
-        [SerializeField] private bool DisableColliderOnOpen = false;
+        [FormerlySerializedAs("DisableColliderOnOpen")]
+        [Tooltip("Turn off the panels' colliders once the door is fully open (back on as soon as it starts closing).")]
+        [SerializeField] private bool disableCollidersOnOpen = false;
 
         [SerializeField]
         private float moveSpeed = 2.0f;
@@ -44,6 +48,10 @@ namespace TheOneFramework.Portals
         [Tooltip("Degrees per second for panels that rotate open.")]
         [SerializeField]
         private float rotateSpeed = 90.0f;
+
+        private bool _isOpen;
+        // True while panels are still travelling - lets Update skip all work once the door has settled.
+        private bool _isMoving;
 
         private void Awake()
         {
@@ -61,48 +69,72 @@ namespace TheOneFramework.Portals
             panel.closedLocalRot = panel.panelTransform.localRotation;
             panel.openLocalRot = panel.closedLocalRot * Quaternion.Euler(panel.openLocalRotOffset);
             panel.targetLocalRot = panel.closedLocalRot;
-            
+
             panel.closedLocalPos = panel.panelTransform.localPosition;
             panel.openLocalPos = panel.closedLocalPos + panel.openLocalPosOffset;
             panel.targetLocalPos = panel.closedLocalPos;
+
+            panel.colliders = panel.panelTransform.GetComponentsInChildren<Collider>();
         }
 
         private void Update()
         {
-            float maxDelta = moveSpeed * Time.deltaTime;
-            float maxDegrees = rotateSpeed * Time.deltaTime;
-            MovePanel(leftPanel, maxDelta, maxDegrees);
-            MovePanel(rightPanel, maxDelta, maxDegrees);
-        }
-
-        private static void MovePanel(Panel panel, float maxDelta, float maxDegrees)
-        {
-            if (panel?.panelTransform == null)
+            if (!_isMoving)
             {
                 return;
             }
 
-            panel.panelTransform.localPosition = Vector3.MoveTowards(
-                panel.panelTransform.localPosition, panel.targetLocalPos, maxDelta);
-            panel.panelTransform.localRotation = Quaternion.RotateTowards(
-                panel.panelTransform.localRotation, panel.targetLocalRot, maxDegrees);
+            float maxDelta = moveSpeed * Time.deltaTime;
+            float maxDegrees = rotateSpeed * Time.deltaTime;
+            bool leftArrived = MovePanel(leftPanel, maxDelta, maxDegrees);
+            bool rightArrived = MovePanel(rightPanel, maxDelta, maxDegrees);
+
+            if (leftArrived && rightArrived)
+            {
+                _isMoving = false;
+                if (_isOpen && disableCollidersOnOpen)
+                {
+                    SetCollidersEnabled(false);
+                }
+            }
+        }
+
+        // Steps the panel towards its target; returns true once it's there (or has no transform).
+        private static bool MovePanel(Panel panel, float maxDelta, float maxDegrees)
+        {
+            if (panel?.panelTransform == null)
+            {
+                return true;
+            }
+
+            Transform t = panel.panelTransform;
+            t.localPosition = Vector3.MoveTowards(t.localPosition, panel.targetLocalPos, maxDelta);
+            t.localRotation = Quaternion.RotateTowards(t.localRotation, panel.targetLocalRot, maxDegrees);
+
+            // MoveTowards/RotateTowards snap exactly onto the target on the last step, so this becomes true.
+            return t.localPosition == panel.targetLocalPos && t.localRotation == panel.targetLocalRot;
         }
 
         // ContextMenu: also callable from the component's ⋮ menu in the Inspector, for testing in Play mode.
         [ContextMenu("Open")]
-        public void Open()
-        {
-            Debug.Log($"[Door] {name} OPEN");
-            SetTarget(leftPanel, true);
-            SetTarget(rightPanel, true);
-        }
+        public void Open() => SetOpen(true);
 
         [ContextMenu("Close")]
-        public void Close()
+        public void Close() => SetOpen(false);
+
+        private void SetOpen(bool open)
         {
-            Debug.Log($"[Door] {name} CLOSE");
-            SetTarget(leftPanel, false);
-            SetTarget(rightPanel, false);
+            Debug.Log($"[Door] {name} {(open ? "OPEN" : "CLOSE")}");
+            _isOpen = open;
+            _isMoving = true;
+            SetTarget(leftPanel, open);
+            SetTarget(rightPanel, open);
+
+            // Solid again right away when closing, so nothing slips through the closing gap.
+            if (!open)
+            {
+                SetCollidersEnabled(true);
+            }
         }
 
         private static void SetTarget(Panel panel, bool open)
@@ -114,6 +146,25 @@ namespace TheOneFramework.Portals
 
             panel.targetLocalPos = open ? panel.openLocalPos : panel.closedLocalPos;
             panel.targetLocalRot = open ? panel.openLocalRot : panel.closedLocalRot;
+        }
+
+        private void SetCollidersEnabled(bool enabled)
+        {
+            SetCollidersEnabled(leftPanel, enabled);
+            SetCollidersEnabled(rightPanel, enabled);
+        }
+
+        private static void SetCollidersEnabled(Panel panel, bool enabled)
+        {
+            if (panel?.colliders == null)
+            {
+                return;
+            }
+
+            foreach (Collider c in panel.colliders)
+            {
+                c.enabled = enabled;
+            }
         }
     }
 }
