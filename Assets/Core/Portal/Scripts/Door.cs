@@ -36,6 +36,8 @@ namespace TheOneFramework.Portals
         [SerializeField]
         private Panel rightPanel = new Panel { openLocalPosOffset = new Vector3(1.0f, 0.0f, 0.0f) };
 
+        [SerializeField] private bool DisableColliderOnOpen = false;
+
         [SerializeField]
         private float moveSpeed = 2.0f;
 
