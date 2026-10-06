@@ -1,5 +1,6 @@
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -17,10 +18,17 @@ namespace StarterAssets
         [SerializeField]
         private float firstPersonFieldOfView = 75.0f;
 
+        [Tooltip("The player's body meshes are moved to this layer and the camera stops rendering it in first person, so you don't see the inside of your own head. Portal cameras still render it, so you can see yourself through portals. If the layer doesn't exist the body is switched to shadows-only instead.")]
+        [SerializeField]
+        private string hiddenBodyLayerName = "FirstPersonHidden";
+
         private Camera cam;
         private CinemachineBrain brain;
         private ThirdPersonControllerFixed thirdPersonController;
         private float thirdPersonFieldOfView;
+        private int thirdPersonCullingMask;
+        private int hiddenBodyLayer = -1;
+        private SkinnedMeshRenderer[] bodyRenderers;
 
         // Static so it belongs to the class rather than this scene's camera: it survives scene loads,
         // so the next level (e.g. after a Lift) starts in the same view the player left in.
@@ -40,6 +48,8 @@ namespace StarterAssets
             brain = GetComponent<CinemachineBrain>();
             thirdPersonController = FindFirstObjectByType<ThirdPersonControllerFixed>();
             thirdPersonFieldOfView = cam.fieldOfView;
+            thirdPersonCullingMask = cam.cullingMask;
+            SetupBodyHiding();
             ApplyMode();
         }
 
@@ -76,6 +86,48 @@ namespace StarterAssets
         {
             brain.enabled = !isFirstPerson;
             cam.fieldOfView = isFirstPerson ? firstPersonFieldOfView : thirdPersonFieldOfView;
+            ApplyBodyVisibility();
+        }
+
+        private void SetupBodyHiding()
+        {
+            if (thirdPersonController == null)
+            {
+                return;
+            }
+
+            bodyRenderers = thirdPersonController.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            hiddenBodyLayer = LayerMask.NameToLayer(hiddenBodyLayerName);
+
+            if (hiddenBodyLayer < 0)
+            {
+                Debug.LogWarning($"[CameraModeToggle] Layer '{hiddenBodyLayerName}' does not exist - add it under Tags & Layers. Falling back to shadows-only body in first person (it won't show in portals either).");
+                return;
+            }
+
+            foreach (var bodyRenderer in bodyRenderers)
+            {
+                bodyRenderer.gameObject.layer = hiddenBodyLayer;
+            }
+        }
+
+        private void ApplyBodyVisibility()
+        {
+            if (hiddenBodyLayer >= 0)
+            {
+                cam.cullingMask = isFirstPerson ? thirdPersonCullingMask & ~(1 << hiddenBodyLayer) : thirdPersonCullingMask;
+                return;
+            }
+
+            if (bodyRenderers == null)
+            {
+                return;
+            }
+
+            foreach (var bodyRenderer in bodyRenderers)
+            {
+                bodyRenderer.shadowCastingMode = isFirstPerson ? ShadowCastingMode.ShadowsOnly : ShadowCastingMode.On;
+            }
         }
     }
 }

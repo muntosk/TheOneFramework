@@ -21,6 +21,14 @@ namespace TheOneFramework.Portals
         [SerializeField]
         private Transform testTransform;
 
+        [Tooltip("Seconds the oval takes to grow open after being placed.")]
+        [SerializeField]
+        private float openDuration = 0.2f;
+
+        private static readonly int openID = Shader.PropertyToID("_Open");
+        private static readonly int outlineColourID = Shader.PropertyToID("_OutlineColour");
+        private float placedTime = float.NegativeInfinity;
+
         private readonly List<IPortalTraveller> portalObjects = new List<IPortalTraveller>();
         // Real-time cooldown per traveller (shared across all portals) after a warp, so landing
         // right at/past the exit plane can't immediately re-trigger another warp back. A spatial
@@ -65,7 +73,8 @@ namespace TheOneFramework.Portals
 
         private void Start()
         {
-            outlineRenderer.material.SetColor("_OutlineColour", PortalColour);
+            outlineRenderer.material.SetColor(outlineColourID, PortalColour);
+            Renderer.material.SetColor(outlineColourID, PortalColour);
 
             gameObject.SetActive(false);
         }
@@ -73,6 +82,7 @@ namespace TheOneFramework.Portals
         private void Update()
         {
             Renderer.enabled = OtherPortal.IsPlaced;
+            UpdateOpenAnimation();
 
             for (int i = portalObjects.Count - 1; i >= 0; --i)
             {
@@ -120,6 +130,17 @@ namespace TheOneFramework.Portals
             }
         }
 
+        // Grows the oval from a point to full size with a slight overshoot, like Portal 2.
+        private void UpdateOpenAnimation()
+        {
+            float t = Mathf.Clamp01((Time.time - placedTime) / Mathf.Max(openDuration, 0.0001f));
+            float u = t - 1.0f;
+            float open = 1.0f + 2.2f * u * u * u + 1.2f * u * u;
+
+            Renderer.material.SetFloat(openID, open);
+            outlineRenderer.material.SetFloat(openID, open);
+        }
+
         public bool PlacePortal(Collider wallCollider, Vector3 pos, Quaternion rot)
         {
             testTransform.position = pos;
@@ -137,6 +158,8 @@ namespace TheOneFramework.Portals
 
                 gameObject.SetActive(true);
                 IsPlaced = true;
+                placedTime = Time.time;
+                UpdateOpenAnimation();
                 return true;
             }
 

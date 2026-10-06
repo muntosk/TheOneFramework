@@ -22,6 +22,30 @@ namespace TheOneFramework.Portals
         [SerializeField]
         private float maxDistance = 250.0f;
 
+        [Header("Audio")]
+        [Tooltip("Plays the shoot sounds (2D, on the player). Leave empty and one is added automatically.")]
+        [SerializeField]
+        private AudioSource audioSource;
+
+        [Tooltip("Random pick per shot of portal 1 (blue). Leave empty for silence.")]
+        [SerializeField]
+        private AudioClip[] shootPortal1Clips;
+
+        [Tooltip("Random pick per shot of portal 2 (orange).")]
+        [SerializeField]
+        private AudioClip[] shootPortal2Clips;
+
+        [Tooltip("Played at the portal when it opens on a surface.")]
+        [SerializeField]
+        private AudioClip[] portalOpenClips;
+
+        [Tooltip("Played at the hit point when the shot lands on a non-portal surface or hits nothing.")]
+        [SerializeField]
+        private AudioClip[] invalidSurfaceClips;
+
+        [SerializeField, Range(0.0f, 1.0f)]
+        private float volume = 0.8f;
+
         [Tooltip("When ticked, portals only stick to colliders with a PortalSurface component (on themselves or a parent). When unticked, anything in the layer mask works unless its PortalSurface says otherwise.")]
         [SerializeField]
         private bool requirePortalSurface = false;
@@ -43,6 +67,13 @@ namespace TheOneFramework.Portals
         {
             input = GetComponent<StarterAssetsInputs>();
             carry = GetComponent<PlayerCarry>();
+
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.playOnAwake = false;
+                audioSource.spatialBlend = 0.0f;
+            }
         }
 
         private void Update()
@@ -53,10 +84,12 @@ namespace TheOneFramework.Portals
 
             if (canFire && input.firePortal1 && !firePortal1Held)
             {
+                PlayRandom(shootPortal1Clips);
                 FirePortal(0, aimCamera.transform.position, aimCamera.transform.forward, maxDistance);
             }
             else if (canFire && input.firePortal2 && !firePortal2Held)
             {
+                PlayRandom(shootPortal2Clips);
                 FirePortal(1, aimCamera.transform.position, aimCamera.transform.forward, maxDistance);
             }
 
@@ -69,6 +102,7 @@ namespace TheOneFramework.Portals
             if (!Physics.Raycast(pos, dir, out RaycastHit hit, distance, layerMask))
             {
                 Debug.Log($"[PortalGun] FirePortal({portalID}) missed - no raycast hit from {pos} dir {dir}");
+                PlayRandom(invalidSurfaceClips);
                 return;
             }
 
@@ -105,6 +139,7 @@ namespace TheOneFramework.Portals
             if (surface != null ? !surface.AllowPortals : requirePortalSurface)
             {
                 Debug.Log($"[PortalGun] FirePortal({portalID}) rejected - {hit.collider.name} is not a portal surface");
+                PlayRandomAt(invalidSurfaceClips, hit.point);
                 return;
             }
 
@@ -118,9 +153,35 @@ namespace TheOneFramework.Portals
             bool wasPlaced = portals.Portals[portalID].PlacePortal(hit.collider, placePoint, portalRotation);
             Debug.Log($"[PortalGun] PlacePortal({portalID}) -> wasPlaced={wasPlaced}");
 
+            if (wasPlaced)
+            {
+                PlayRandomAt(portalOpenClips, placePoint);
+            }
+            else
+            {
+                PlayRandomAt(invalidSurfaceClips, hit.point);
+            }
+
             if (wasPlaced && crosshair != null)
             {
                 crosshair.SetPortalPlaced(portalID, true);
+            }
+        }
+
+        private void PlayRandom(AudioClip[] clips)
+        {
+            if (clips != null && clips.Length > 0)
+            {
+                audioSource.PlayOneShot(clips[Random.Range(0, clips.Length)], volume);
+            }
+        }
+
+        // 3D one-shot at a world position, so portal opens/fizzles sound like they come from the wall.
+        private void PlayRandomAt(AudioClip[] clips, Vector3 position)
+        {
+            if (clips != null && clips.Length > 0)
+            {
+                AudioSource.PlayClipAtPoint(clips[Random.Range(0, clips.Length)], position, volume);
             }
         }
 
