@@ -1,3 +1,4 @@
+using System;
 using StarterAssets;
 using TheOneFramework.Portals;
 using UnityEngine;
@@ -73,18 +74,21 @@ namespace Core.Portal.Scripts
                 return;
             }
 
-            // Wait for the door to close before moving.
-            if (_delayTimer < startDelay)
+            if (liftMode == LiftMode.Exit)
             {
-                // Player stepped back out before it left: cancel and let them in again later.
-                if (liftMode == LiftMode.Exit && _rider == null)
+                // Wait for the door to close before moving.
+                if (_delayTimer < startDelay)
                 {
-                    Cancel();
+                    // Player stepped back out before it left: cancel and let them in again later.
+                    if (liftMode == LiftMode.Exit && _rider == null)
+                    {
+                        Cancel();
+                        return;
+                    }
+
+                    _delayTimer += Time.deltaTime;
                     return;
                 }
-
-                _delayTimer += Time.deltaTime;
-                return;
             }
 
             Vector3 before = transform.position;
@@ -219,6 +223,18 @@ namespace Core.Portal.Scripts
 
             // Don't wait for OnTriggerEnter - it may only fire after the lift has already started moving.
             _rider = player;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (liftMode == LiftMode.Exit)
+            {
+                
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(transform.position, 0.3f);
+                Gizmos.DrawLine(transform.position, transform.position + Vector3.up * height);
+                Gizmos.DrawWireSphere(_target, 0.3f);
+            }
         }
     }
 }
