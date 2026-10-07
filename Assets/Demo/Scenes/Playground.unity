@@ -4547,21 +4547,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 4.5
-  SprintSpeed: 5.335
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
-  LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
+  LandingAudioClip: {fileID: 8300000, guid: 242291a0f1e28c874809a07ed37dc9a3, type: 3}
   FootstepAudioClips:
-  - {fileID: 8300000, guid: 72f526a6a9890f643a88e85a61c86c8a, type: 3}
-  - {fileID: 8300000, guid: 85016e0f2b01da248b9663dd49a161b0, type: 3}
-  - {fileID: 8300000, guid: 186de84b3207156479abe98f4958fed0, type: 3}
-  - {fileID: 8300000, guid: 1a91fcd19acf1e54bba0945d9f390849, type: 3}
-  - {fileID: 8300000, guid: 14e8a8d2158bec840b56c54f5266e692, type: 3}
-  - {fileID: 8300000, guid: 29841e7d5bbfb5b419c9ad16ca8bc4c1, type: 3}
-  - {fileID: 8300000, guid: dd1af302b8902684d9381de1f2d3a5af, type: 3}
-  - {fileID: 8300000, guid: 67c8b33e424ccdc4486edf538ab91c5a, type: 3}
-  - {fileID: 8300000, guid: 274649b0e221539409070ebf6c18918b, type: 3}
-  - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
+  - {fileID: 8300000, guid: e19e459fdf895d0c39cbae37ce8a31fa, type: 3}
+  - {fileID: 8300000, guid: 908b151fea4cf2d9cbdf70bb8f671698, type: 3}
+  - {fileID: 8300000, guid: d260c85f686a5661ba35b0294e12f501, type: 3}
+  - {fileID: 8300000, guid: ca0f77582172d1eb1bfa1467c10f8ff9, type: 3}
+  - {fileID: 8300000, guid: fd18035acd70242f28601098eaf7121d, type: 3}
+  - {fileID: 8300000, guid: c222e30f017a0a210968413931742194, type: 3}
+  - {fileID: 8300000, guid: f532c384f6593bf5f8ab6a867924753b, type: 3}
+  - {fileID: 8300000, guid: 979a8da10af5309dd82fa2485eb506d8, type: 3}
+  - {fileID: 8300000, guid: 158bc225be311119e9128724785e84dc, type: 3}
+  - {fileID: 8300000, guid: f42219afdb8f603e29747f06612f91ae, type: 3}
+  - {fileID: 8300000, guid: 04639e990d6fefd4aa5e9e7934c3542b, type: 3}
+  - {fileID: 8300000, guid: d774ec262857c38da9d122009be9e1b9, type: 3}
+  - {fileID: 8300000, guid: 807dbfb80933050bd842c80a37d880fc, type: 3}
+  - {fileID: 8300000, guid: d004e1a9d6c23eba09dda8a67e6a261e, type: 3}
+  - {fileID: 8300000, guid: eec841985e9562b3c876e770a9cafd3f, type: 3}
+  - {fileID: 8300000, guid: 3fd318ed7beb167d095e3d32cc6266d2, type: 3}
+  - {fileID: 8300000, guid: 638efdafcd561902bbdf4dc9be8f8908, type: 3}
+  - {fileID: 8300000, guid: 69e23058f64071e23bf17151a92ef025, type: 3}
+  - {fileID: 8300000, guid: 3d104eecc10564850a03705f8e70138d, type: 3}
+  - {fileID: 8300000, guid: 4af65363ecf199c5d84a5d0983ffb80c, type: 3}
   FootstepAudioVolume: 0.5
   JumpHeight: 1.2
   Gravity: -15
@@ -4578,6 +4587,10 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+  FollowCamera: {fileID: 0}
+  LookUpPullInStartAngle: 40
+  PortalVelocityDamping: 6
+  airAcceleration: 5
 --- !u!4 &1952320078 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1417932381734374582, guid: 31c4819cb9b1b41d3aa8c852d12c5587, type: 3}

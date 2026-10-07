@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3452297916458317914
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7747434155059974252}
+  - component: {fileID: 1922928369327437134}
+  m_Layer: 0
+  m_Name: OvergrowthScatter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7747434155059974252
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3452297916458317914}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1922928369327437134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3452297916458317914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77677075ac8a7df17a925bd64b784969, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TheOneFramework.Utilities.DressingScatter
+  entries:
+  - prefab: {fileID: 2727491842029871431, guid: 2efafbbe35bad21f89ec6d43c96e1a61, type: 3}
+    weight: 1
+  - prefab: {fileID: 4027263101675927907, guid: 597f7adf2764a23939478debae8f43eb, type: 3}
+    weight: 1
+  - prefab: {fileID: 8265670044112920005, guid: 487d4d4260cf2eb1cab8193c4ab1244a, type: 3}
+    weight: 1
+  - prefab: {fileID: 7983494547292881096, guid: c972a019ad61aadf3af6dcb734952e6c, type: 3}
+    weight: 1
+  count: 5
+  radius: 1.5
+  maxDistance: 3
+  surfaceMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  scaleRange: {x: 0.8, y: 1.2}
+  maxTilt: 0
+  seed: 0
+  newSeedEachTime: 1

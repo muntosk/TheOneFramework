@@ -99,3 +99,9 @@ fmod_editor.log
 # FMOD 1.10.x (Legacy)
 /Assets/FMODAssets/*
 /Assets/FMODStudioCache.meta
+# Portal 2 source materials: only the baked .png/.mat output (Portal-2-harun-export/Baked) goes in git.
+# The .vmt/.vtf sources are big and can be re-copied from the extracted game files to re-bake.
+/[Aa]ssets/ThirdParty/Portal2HarunExport/Export/**/*.vmt
+/[Aa]ssets/ThirdParty/Portal2HarunExport/Export/**/*.vmt.meta
+/[Aa]ssets/ThirdParty/Portal2HarunExport/Export/**/*.vtf
+/[Aa]ssets/ThirdParty/Portal2HarunExport/Export/**/*.vtf.meta

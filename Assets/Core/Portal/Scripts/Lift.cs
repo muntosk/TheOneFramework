@@ -2,6 +2,7 @@ using System;
 using StarterAssets;
 using TheOneFramework.Portals;
 using UnityEngine;
+using TheOneFramework.Audio;
 
 namespace Core.Portal.Scripts
 {
@@ -31,11 +32,22 @@ namespace Core.Portal.Scripts
         [Tooltip("Decide if the lift exits the level or enters the level.")]
         [SerializeField] private LiftMode liftMode = LiftMode.Exit;
 
+        [Header("Audio")]
+        [Tooltip("Played once when the lift starts moving. Leave empty for silence.")]
+        [SerializeField] private AudioClip startClip;
+        [Tooltip("Loops on the lift while it travels.")]
+        [SerializeField] private AudioClip travelLoopClip;
+        [Tooltip("Played once when the lift arrives.")]
+        [SerializeField] private AudioClip stopClip;
+        [SerializeField, Range(0.0f, 1.0f)] private float volume = 0.8f;
+
         private Vector3 _target;
         private bool _triggered;
         private bool _arrived;
         private float _delayTimer;
         private CharacterController _rider;
+        private AudioSource _audioSource;
+        private bool _moving;
 
         private void Awake()
         {
@@ -91,6 +103,12 @@ namespace Core.Portal.Scripts
                 }
             }
 
+            if (!_moving)
+            {
+                _moving = true;
+                StartTravelAudio();
+            }
+
             Vector3 before = transform.position;
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, _target, speed * Time.deltaTime);
             if (_rider != null)
@@ -102,6 +120,8 @@ namespace Core.Portal.Scripts
             if (transform.localPosition != _target) return;
 
             _arrived = true;
+            _moving = false;
+            StopTravelAudio();
             if (liftMode == LiftMode.Exit)
             {
                 SaveRiderPose();
@@ -110,6 +130,47 @@ namespace Core.Portal.Scripts
             else if (door != null)
             {
                 door.Open();
+            }
+        }
+
+        private void StartTravelAudio()
+        {
+            if (startClip == null && travelLoopClip == null)
+            {
+                return;
+            }
+
+            // Lives on the lift itself, so the sound travels along with it.
+            if (_audioSource == null)
+            {
+                _audioSource = gameObject.AddComponent<AudioSource>();
+                _audioSource.playOnAwake = false;
+                _audioSource.spatialBlend = 1.0f;
+                GameAudio.Route(_audioSource, AudioChannel.Sfx);
+            }
+
+            _audioSource.volume = volume;
+            if (startClip != null)
+            {
+                _audioSource.PlayOneShot(startClip);
+            }
+            if (travelLoopClip != null)
+            {
+                _audioSource.clip = travelLoopClip;
+                _audioSource.loop = true;
+                _audioSource.Play();
+            }
+        }
+
+        private void StopTravelAudio()
+        {
+            if (_audioSource != null)
+            {
+                _audioSource.Stop();
+            }
+            if (stopClip != null)
+            {
+                GameAudio.PlayAt(stopClip, transform.position, volume);
             }
         }
 

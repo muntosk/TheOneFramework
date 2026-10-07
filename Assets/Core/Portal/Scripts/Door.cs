@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using TheOneFramework.Audio;
 
 namespace TheOneFramework.Portals
 {
@@ -48,6 +49,17 @@ namespace TheOneFramework.Portals
         [Tooltip("Degrees per second for panels that rotate open.")]
         [SerializeField]
         private float rotateSpeed = 90.0f;
+
+        [Header("Audio")]
+        [Tooltip("Played at the door when it starts opening. Leave empty for silence.")]
+        [SerializeField]
+        private AudioClip openClip;
+
+        [SerializeField]
+        private AudioClip closeClip;
+
+        [SerializeField, Range(0.0f, 1.0f)]
+        private float volume = 0.8f;
 
         private bool _isOpen;
         // True while panels are still travelling - lets Update skip all work once the door has settled.
@@ -125,6 +137,14 @@ namespace TheOneFramework.Portals
         private void SetOpen(bool open)
         {
             Debug.Log($"[Door] {name} {(open ? "OPEN" : "CLOSE")}");
+
+            // Only on an actual change, so e.g. a Close() on an already closed door stays quiet.
+            AudioClip clip = open ? openClip : closeClip;
+            if (open != _isOpen && clip != null)
+            {
+                GameAudio.PlayAt(clip, transform.position, volume);
+            }
+
             _isOpen = open;
             _isMoving = true;
             SetTarget(leftPanel, open);

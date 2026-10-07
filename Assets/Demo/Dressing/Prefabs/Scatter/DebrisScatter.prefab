@@ -1,0 +1,149 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3461241835000977525
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4344603223017917915}
+  - component: {fileID: 2312134596391307693}
+  m_Layer: 0
+  m_Name: DebrisScatter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4344603223017917915
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3461241835000977525}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2312134596391307693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3461241835000977525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77677075ac8a7df17a925bd64b784969, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TheOneFramework.Utilities.DressingScatter
+  entries:
+  - prefab: {fileID: 3109797458677077171, guid: 43f79390a89cc57beb496da36c8f974f, type: 3}
+    weight: 1
+  - prefab: {fileID: 5643682212339791227, guid: b6b25953668910422bb2997006dbccdf, type: 3}
+    weight: 1
+  - prefab: {fileID: 2479421323583675156, guid: dc59398379d552122a4a103c70f0ab1d, type: 3}
+    weight: 1.5
+  - prefab: {fileID: 319645274617097232, guid: 84a7ac01d931069498e075fede1c705b, type: 3}
+    weight: 0.3
+  - prefab: {fileID: 6110024960694307933, guid: 3aef8e7f4566f8f12bba7e12beaffaff, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 8091767347746504906, guid: 4d99b18f37d9b981e9cc32956a691884, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 5453991770488883435, guid: aca7b56578ac736a1ab0d25c79d93041, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 7339541512054616925, guid: e8d66ca0ce0a2966885a41b21e34830e, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 3284866052674453987, guid: 9f7d632fb6782049c9c79ae189095bfc, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 5731773357373734000, guid: 54a72435956f771aca5da26a30047a7f, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 4739268772269582536, guid: 5648db4d9aff6cf3d878aa92d6abcb3e, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 2671650067205543556, guid: 83e25345e558ab206be070ce0b77c419, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 6702914962477168994, guid: 6db46901230c3f9b6887bde73c90892e, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 5394296949830286387, guid: 1a224a37068c658e29f9bf2cb5adc567, type: 3}
+    weight: 0.5
+  - prefab: {fileID: 5277072690283537753, guid: 625cc2d9f0376798ebc63066539f16f9, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 8208045277344844289, guid: 3907c0d70db54b61893c8a5b24a423b4, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 8572744583403803425, guid: 2728393d41e17cae7952b42f5648a875, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 7812607086471929492, guid: f5224c3dc1394f68fbd95c19cc38b125, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 5198809845946967248, guid: f8e494f1fdb89630abfbffbc80bd04e7, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 3947446893628617558, guid: 016469ac12e4c2976b97f99b31a89567, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 9123133535513311679, guid: 89bd35010878de74a9ec954646143f37, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 8731013512464135480, guid: 769a8b0aabaee10089a4913786984016, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 4796982853641970434, guid: c1d5bd599d668eb528b1a7535bee7c35, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 3898078526380504987, guid: 912f638b614cbe7b1896e56a4e5f9f86, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 1211526838064374035, guid: e06a75f46518f27fd8f86dc893acd52b, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 4993594080140426394, guid: 5c3152acf40d0cbdc990fa69cfe43a66, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 2762488044481984491, guid: 22b597bf3473bf0bd912a58e18bc404d, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 5095297119361120634, guid: c9fb41976736f451db5da00918c2a821, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 5687524061941169777, guid: e1a2dc26e8370eb1eba0aed5420c6a7d, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 6486939893494941977, guid: 60da9eb693ba1029f9c958038bf456a2, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 7649802178275542267, guid: ddeb1eff0504b1b968f32683913aaf6f, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 3068009991241014017, guid: 99fba81708c62884a99b6b7531ab8849, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 3733282408458108389, guid: 79e1e6739acde7c139b8fdb70cf7a23f, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 1402533909790158199, guid: ef00d37f184644d158780926d3e50445, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 8028364214111364717, guid: 7fd49a5f07b43cccaaf0586bb2ac7610, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 58581497456414491, guid: 765e6e113d685e1c79155dd444baaef8, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 8317083387061171493, guid: 374fbf70f02b2d1f99fc08be2809398e, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 3088192035448980890, guid: b75a867eba06334bb82a9949c4cd3f9b, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 1072313586958249249, guid: f190b7ddd54c13b8092bb0883ef0cd63, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 3428824942612653395, guid: b0244bcc3ddac9fd3878fb8fa77a60a3, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 1414766282742966318, guid: 032c5e14e8dcb3cb68f37b97706e5cf5, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 131353400935351015, guid: 2c60ddf9f41c98df1b5a117f8be67612, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 5474128313943592726, guid: 17c81e697d8843a3b97e9221e553c3a5, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 1273401880068823273, guid: 9c5900626e8c462e2885626b739d9277, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 7072885821743199404, guid: 06e0af43a2ca17018b69a924d12fff84, type: 3}
+    weight: 0.15
+  - prefab: {fileID: 7760686047177176827, guid: 72c88d4c503889a3bb5f9b3c66676a42, type: 3}
+    weight: 0.15
+  count: 18
+  radius: 2
+  maxDistance: 3
+  surfaceMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  scaleRange: {x: 0.8, y: 1.2}
+  maxTilt: 25
+  seed: 0
+  newSeedEachTime: 1

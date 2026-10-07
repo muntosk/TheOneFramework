@@ -1,31 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Yarn.Unity;
+using TheOneFramework.Audio;
 
 public class SimpleAudioTrigger : PlayerActivatable 
 {
     public AudioClip audioClip;
 
+    [Tooltip("Which mixer channel this plays through (e.g. Voice for announcer lines).")]
+    public AudioChannel channel = AudioChannel.Sfx;
+
+    [Range(0.0f, 1.0f)]
+    public float volume = 1.0f;
+
     override protected void OnActivate()
     {        
         if (audioClip != null)
         {
-            PlayAudioAndDestroy();
+            GameAudio.Play2D(audioClip, volume, channel);
         }
-    }
-
-    private void PlayAudioAndDestroy()
-    {
-        GameObject audioObject = new GameObject("One Shot Audio");
-        audioObject.transform.position = transform.position;
-
-        AudioSource audioSource = audioObject.AddComponent<AudioSource>();
-        audioSource.playOnAwake = false;
-        audioSource.clip = audioClip;
-
-        audioSource.Play();
-
-        Destroy(audioObject, audioClip.length);
     }
 }

@@ -909,6 +909,8 @@ MonoBehaviour:
   buttonCap: {fileID: 453747715}
   pressedDepth: 0.5
   moveSpeed: 6
+  pressClip: {fileID: 8300000, guid: 27d68a7d1aca2d814977bd7152f68210, type: 3}
+  volume: 0.8
   onPressed:
     m_PersistentCalls:
       m_Calls:
@@ -1134,6 +1136,8 @@ MonoBehaviour:
   buttonCap: {fileID: 467681313}
   pressedDepth: 0.5
   moveSpeed: 6
+  pressClip: {fileID: 8300000, guid: 27d68a7d1aca2d814977bd7152f68210, type: 3}
+  volume: 0.8
   onPressed:
     m_PersistentCalls:
       m_Calls:
@@ -1668,6 +1672,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TheOneFramework.Portals.PortalFizzleField
   portalPair: {fileID: 119271796}
+  loopClip: {fileID: 8300000, guid: 130d3358032ee88529da62dd377ebd6a, type: 3}
+  portalFizzleClips:
+  - {fileID: 8300000, guid: 4713e71c0393b67668e4dcd94ec5fe29, type: 3}
+  - {fileID: 8300000, guid: c5a2a22a09526bc9eb7fefb69de8e138, type: 3}
+  objectFizzleClip: {fileID: 8300000, guid: 1c9127dbd33f2c29a86906a7a8609f30, type: 3}
+  volume: 0.8
 --- !u!1 &1178659855
 GameObject:
   m_ObjectHideFlags: 0
@@ -5904,18 +5914,28 @@ MonoBehaviour:
   MoveSpeed: 4.5
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
-  LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
+  LandingAudioClip: {fileID: 8300000, guid: 242291a0f1e28c874809a07ed37dc9a3, type: 3}
   FootstepAudioClips:
-  - {fileID: 8300000, guid: 72f526a6a9890f643a88e85a61c86c8a, type: 3}
-  - {fileID: 8300000, guid: 85016e0f2b01da248b9663dd49a161b0, type: 3}
-  - {fileID: 8300000, guid: 186de84b3207156479abe98f4958fed0, type: 3}
-  - {fileID: 8300000, guid: 1a91fcd19acf1e54bba0945d9f390849, type: 3}
-  - {fileID: 8300000, guid: 14e8a8d2158bec840b56c54f5266e692, type: 3}
-  - {fileID: 8300000, guid: 29841e7d5bbfb5b419c9ad16ca8bc4c1, type: 3}
-  - {fileID: 8300000, guid: dd1af302b8902684d9381de1f2d3a5af, type: 3}
-  - {fileID: 8300000, guid: 67c8b33e424ccdc4486edf538ab91c5a, type: 3}
-  - {fileID: 8300000, guid: 274649b0e221539409070ebf6c18918b, type: 3}
-  - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
+  - {fileID: 8300000, guid: e19e459fdf895d0c39cbae37ce8a31fa, type: 3}
+  - {fileID: 8300000, guid: 908b151fea4cf2d9cbdf70bb8f671698, type: 3}
+  - {fileID: 8300000, guid: d260c85f686a5661ba35b0294e12f501, type: 3}
+  - {fileID: 8300000, guid: ca0f77582172d1eb1bfa1467c10f8ff9, type: 3}
+  - {fileID: 8300000, guid: fd18035acd70242f28601098eaf7121d, type: 3}
+  - {fileID: 8300000, guid: c222e30f017a0a210968413931742194, type: 3}
+  - {fileID: 8300000, guid: f532c384f6593bf5f8ab6a867924753b, type: 3}
+  - {fileID: 8300000, guid: 979a8da10af5309dd82fa2485eb506d8, type: 3}
+  - {fileID: 8300000, guid: 158bc225be311119e9128724785e84dc, type: 3}
+  - {fileID: 8300000, guid: f42219afdb8f603e29747f06612f91ae, type: 3}
+  - {fileID: 8300000, guid: 04639e990d6fefd4aa5e9e7934c3542b, type: 3}
+  - {fileID: 8300000, guid: d774ec262857c38da9d122009be9e1b9, type: 3}
+  - {fileID: 8300000, guid: 807dbfb80933050bd842c80a37d880fc, type: 3}
+  - {fileID: 8300000, guid: d004e1a9d6c23eba09dda8a67e6a261e, type: 3}
+  - {fileID: 8300000, guid: eec841985e9562b3c876e770a9cafd3f, type: 3}
+  - {fileID: 8300000, guid: 3fd318ed7beb167d095e3d32cc6266d2, type: 3}
+  - {fileID: 8300000, guid: 638efdafcd561902bbdf4dc9be8f8908, type: 3}
+  - {fileID: 8300000, guid: 69e23058f64071e23bf17151a92ef025, type: 3}
+  - {fileID: 8300000, guid: 3d104eecc10564850a03705f8e70138d, type: 3}
+  - {fileID: 8300000, guid: 4af65363ecf199c5d84a5d0983ffb80c, type: 3}
   FootstepAudioVolume: 0.5
   JumpHeight: 1.2
   Gravity: -15
@@ -5961,10 +5981,23 @@ MonoBehaviour:
   aimCamera: {fileID: 330585545}
   maxDistance: 250
   audioSource: {fileID: 0}
-  shootPortal1Clips: []
-  shootPortal2Clips: []
-  portalOpenClips: []
-  invalidSurfaceClips: []
+  shootPortal1Clips:
+  - {fileID: 8300000, guid: ce72f03370a460e6f8d284c8b91d897d, type: 3}
+  - {fileID: 8300000, guid: 3ccb2ed9a0b88e1cda4e70c0f38f20d1, type: 3}
+  - {fileID: 8300000, guid: 8fb5e8598922bb01eaa8ea3246d47692, type: 3}
+  shootPortal2Clips:
+  - {fileID: 8300000, guid: b2281decb86d7b709a3df1053a8b0034, type: 3}
+  - {fileID: 8300000, guid: 23aa28107072838b2b9241613fe47905, type: 3}
+  - {fileID: 8300000, guid: 9eda0544b7ab92d359953ca882e79c06, type: 3}
+  portalOpenClips:
+  - {fileID: 8300000, guid: c7da3d667b2ccbfdcaff3e57190c0c5a, type: 3}
+  - {fileID: 8300000, guid: 811238e5509f3176492716d016ff60ea, type: 3}
+  - {fileID: 8300000, guid: 8508ac9e5b799e11e86be171b3eba7e8, type: 3}
+  invalidSurfaceClips:
+  - {fileID: 8300000, guid: c2c25907b0d122d569659f1c63066e6b, type: 3}
+  - {fileID: 8300000, guid: a8ecbcf6d3c4c422483ea0923c1d86ca, type: 3}
+  - {fileID: 8300000, guid: a55e6ed9f7f7b8dd985b7e3af7e8be94, type: 3}
+  - {fileID: 8300000, guid: d2e7d83e4a59b756fbb2aabf38ad72ee, type: 3}
   volume: 0.8
   requirePortalSurface: 0
 --- !u!114 &1952320090

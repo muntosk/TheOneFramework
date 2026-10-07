@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using TheOneFramework.Audio;
 
 namespace TheOneFramework.Portals
 {
@@ -19,6 +20,13 @@ namespace TheOneFramework.Portals
 
         [SerializeField]
         private float moveSpeed = 6.0f;
+
+        [Tooltip("Played at the button when pressed. Leave empty for silence.")]
+        [SerializeField]
+        private AudioClip pressClip;
+
+        [SerializeField, Range(0.0f, 1.0f)]
+        private float volume = 0.8f;
 
         public UnityEvent onPressed;
 
@@ -55,6 +63,10 @@ namespace TheOneFramework.Portals
         {
             Debug.Log($"[PoleButton] {name} PRESSED");
             targetLocalPos = pressedLocalPos;
+            if (pressClip != null)
+            {
+                GameAudio.PlayAt(pressClip, transform.position, volume);
+            }
             onPressed.Invoke();
         }
     }

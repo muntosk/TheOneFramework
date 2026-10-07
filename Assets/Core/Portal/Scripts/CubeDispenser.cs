@@ -1,4 +1,5 @@
 using UnityEngine;
+using TheOneFramework.Audio;
 
 namespace TheOneFramework.Portals
 {
@@ -17,6 +18,13 @@ namespace TheOneFramework.Portals
 
         [SerializeField]
         private bool spawnOnStart = true;
+
+        [Tooltip("Played at the spawn point every time a cube drops. Leave empty for silence.")]
+        [SerializeField]
+        private AudioClip dispenseClip;
+
+        [SerializeField, Range(0.0f, 1.0f)]
+        private float volume = 0.8f;
 
         private GameObject currentCube;
 
@@ -44,6 +52,10 @@ namespace TheOneFramework.Portals
 
             Transform origin = spawnPoint != null ? spawnPoint : transform;
             currentCube = Instantiate(cubePrefab, origin.position, origin.rotation);
+            if (dispenseClip != null)
+            {
+                GameAudio.PlayAt(dispenseClip, origin.position, volume);
+            }
             Debug.Log($"[CubeDispenser] {name} spawned {currentCube.name} at {origin.position}");
         }
     }

@@ -1,5 +1,6 @@
 using StarterAssets;
 using UnityEngine;
+using TheOneFramework.Audio;
 
 namespace TheOneFramework.Portals
 {
@@ -68,11 +69,21 @@ namespace TheOneFramework.Portals
             input = GetComponent<StarterAssetsInputs>();
             carry = GetComponent<PlayerCarry>();
 
+            // The player is a prefab shared by every level, and prefabs can't reference scene
+            // objects - so find the level's own portals/crosshair/camera when they aren't wired up.
+            if (portals == null) portals = FindAnyObjectByType<PortalPair>();
+            if (crosshair == null) crosshair = FindAnyObjectByType<Crosshair>();
+            if (aimCamera == null) aimCamera = Camera.main;
+
             if (audioSource == null)
             {
                 audioSource = gameObject.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
                 audioSource.spatialBlend = 0.0f;
+            }
+            if (audioSource.outputAudioMixerGroup == null)
+            {
+                GameAudio.Route(audioSource, AudioChannel.Sfx);
             }
         }
 
@@ -181,7 +192,7 @@ namespace TheOneFramework.Portals
         {
             if (clips != null && clips.Length > 0)
             {
-                AudioSource.PlayClipAtPoint(clips[Random.Range(0, clips.Length)], position, volume);
+                GameAudio.PlayAt(clips[Random.Range(0, clips.Length)], position, volume);
             }
         }
 

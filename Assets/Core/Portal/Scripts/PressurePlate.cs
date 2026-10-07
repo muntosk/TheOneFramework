@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using TheOneFramework.Audio;
 
 namespace TheOneFramework.Portals
 {
@@ -25,6 +26,17 @@ namespace TheOneFramework.Portals
 
         [SerializeField]
         private float moveSpeed = 6.0f;
+
+        [Header("Audio")]
+        [Tooltip("Played at the plate when it goes down. Leave empty for silence.")]
+        [SerializeField]
+        private AudioClip pressClip;
+
+        [SerializeField]
+        private AudioClip releaseClip;
+
+        [SerializeField, Range(0.0f, 1.0f)]
+        private float volume = 0.8f;
 
         public UnityEvent onPressed;
         public UnityEvent onReleased;
@@ -79,7 +91,16 @@ namespace TheOneFramework.Portals
             if (wasPressed && !IsPressed)
             {
                 Debug.Log($"[PressurePlate] {name} RELEASED");
+                PlayClip(releaseClip);
                 onReleased.Invoke();
+            }
+        }
+
+        private void PlayClip(AudioClip clip)
+        {
+            if (clip != null)
+            {
+                GameAudio.PlayAt(clip, transform.position, volume);
             }
         }
 
@@ -118,6 +139,7 @@ namespace TheOneFramework.Portals
             if (!wasPressed && IsPressed)
             {
                 Debug.Log($"[PressurePlate] {name} PRESSED");
+                PlayClip(pressClip);
                 onPressed.Invoke();
             }
         }
@@ -134,6 +156,7 @@ namespace TheOneFramework.Portals
             if (!IsPressed)
             {
                 Debug.Log($"[PressurePlate] {name} RELEASED");
+                PlayClip(releaseClip);
                 onReleased.Invoke();
             }
         }
