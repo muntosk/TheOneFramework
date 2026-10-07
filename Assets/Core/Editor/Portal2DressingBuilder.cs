@@ -22,7 +22,7 @@ namespace TheOneFramework.EditorTools
         private const string DecalMaterialFolder = OutputRoot + "/Materials/Decals";
         private const string DecalTextureFolder = OutputRoot + "/Textures/Decals";
         // Folders of .fbx models converted from Portal 2 .mdl (Blender + SourceIO).
-        private static readonly string[] ModelFolders = { OutputRoot + "/Models/Vines", OutputRoot + "/Models/LiftShaft", OutputRoot + "/Models/Electrical", "Assets/Core/Portal/Models" };
+        private static readonly string[] ModelFolders = { OutputRoot + "/Models/Vines", OutputRoot + "/Models/LiftShaft", OutputRoot + "/Models/Electrical", OutputRoot + "/Models/Ending", OutputRoot + "/Models/Facility", "Assets/Core/Portal/Models" };
         private const string BakedModelMaterials = BakedRoot + "models";
 
         // Source engine units -> metres (same factor the imported .smd models use).

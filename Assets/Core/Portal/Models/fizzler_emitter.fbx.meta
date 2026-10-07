@@ -3,7 +3,12 @@ guid: 7c15bc26e1aa5b7e59e5ba5b097e8388
 ModelImporter:
   serializedVersion: 24600
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fizzler
+    second: {fileID: 2100000, guid: dad995b7d848ef553b64d08e53c5498c, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
