@@ -145,13 +145,21 @@ freedom (e.g. sunset instead of daylight). Walk around freely until you reach th
 | Level kit (portalable / non-portalable walls, glass, fold-out platforms) | ✅ done |
 | Set dressing (vines, decals, graffiti, cables, lift shaft) | ✅ done |
 | Audio + AudioMixer (Music / SFX / Voice / Ambience) | ✅ done |
+| Music (chambers, surface start, reveal, escape, ending song) — `Demo/Audio/Music/` | ✅ assets in project |
+| Ambience (lab hum, machines, drone, wind, birds) + announcer chimes — `Demo/Audio/` | ✅ assets in project |
+| Ending sounds (incinerator, fire, flare-up, conveyor belt) — `Demo/Audio/Ending/` | ✅ assets in project |
+| Conveyor belt + incinerator hatch models — `Demo/Dressing/Models/Ending/` | ✅ assets in project |
+| Security camera + monitors ("being watched", S.A.F.E.-T on screen) — `Demo/Dressing/Models/Facility/` | ✅ assets in project |
+| UI font Titillium Web — `Demo/UI/Fonts/` | ✅ in project (still make a TextMeshPro font asset) |
+| Human characters for Wes + volunteers (Mixamo) | ⬜ download yourself (Adobe login) |
+| Robot copies behind the window | ✅ StarterAssets robot model already in project |
 | S.A.F.E.-T announcer lines (text on screen, through Yarn) | ⬜ to build |
 | Conversation with Wes (Yarn, 2–3 choices) | ⬜ to build — framework has `DialogueTrigger`, `SpeechBubbles` |
 | "Bang on glass" prompt + "RUN!" speech bubble | ⬜ framework `ProximityTrigger` + `SpeechBubbles` |
 | Conveyor belt that carries the player | ⬜ small script (same idea as the lift carrying you) |
 | Incinerator fire that turns on as you approach | ⬜ particles toggled by script |
-| Robot copies replaying your moves (window scene) | ⬜ player model with grey material + keyframed animations |
-| Volunteers training behind windows | ⬜ same as above, looping animations |
+| Robot copies replaying your moves (window scene) | ⬜ set up StarterAssets robot + keyframed animations |
+| Volunteers training behind windows | ⬜ Mixamo humans with looping animations |
 | Surface scene (terrain 200×200, trees, grass, water, wind), used at start and end | ⬜ to build |
 | Facility entrance on the surface + recruitment posters | ⬜ to build |
 | End spot trigger on the surface (final line + end) | ⬜ small, framework triggers |

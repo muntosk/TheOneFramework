@@ -25,6 +25,18 @@ the user's own Portal-style puzzle game. The user is Dutch — reply in Dutch.
   (~0.78 ≈ Chell's 1.37 m, matching Portal's world scale).
 - Several scripts use CRLF line endings (and some a BOM); keep them that way when editing.
 
+## Where the content is
+- Puzzle pieces: `Core/Portal/Prefabs/Gameplay/` (door, lift, buttons, plates, dispenser, portals).
+- Level kit: `Core/Portal/Prefabs/LevelKit/` (walls/floors/ceilings portalable or not, glass, fizzler, platforms).
+- Set dressing: `Demo/Dressing/` — `Models/` (Vines, LiftShaft, Electrical, Ending = conveyor belt +
+  incinerator hatch, Facility = security camera + monitors), `Prefabs/Decals/`, `Prefabs/Scatter/`.
+- Audio: Portal SFX in `Core/Portal/Audio/`; game audio in `Demo/Audio/` (`Music/`, `Ambience/`,
+  `Ending/`, `Announcer/` chimes). Mixer: `Core/Audio/Mixer/GameMixer`.
+- Terrain assets (trees, grass, rocks, water, skyboxes): `ThirdParty/TerrainPainting/`.
+- UI font: `Demo/UI/Fonts/TitilliumWeb/` (a TextMeshPro font asset still has to be generated).
+- Player: `Core/PlayerOverrides/Prefabs/PlayerRig.prefab`. Robot NPCs: the StarterAssets robot model.
+- Still missing: human characters (Wes, volunteers) — user downloads them from Mixamo.
+
 ## Portal 2 asset pipeline
 World scale: 1 Source unit = 0.01905 m (all Portal assets, kit panels and converted models use it).
 
