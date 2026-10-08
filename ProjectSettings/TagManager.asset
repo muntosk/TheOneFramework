@@ -9,6 +9,7 @@ TagManager:
   - RespawnPlayers
   - Portal
   - Fizzler
+  - FirstPersonHidden
   layers:
   - Default
   - TransparentFX
