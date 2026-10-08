@@ -42,7 +42,8 @@ World scale: 1 Source unit = 0.01905 m (all Portal assets, kit panels and conver
 
 - **Materials:** Portal 2 `.vmt`/`.vtf` go in `Assets/ThirdParty/Portal2HarunExport/Export/<game path>`
   (git-ignored, too big). In Unity: select `Export` → Tools > Portal 2 > Bake VMTs To Editable Materials
-  → `.png` + URP `.mat` in `Baked/` (that part is in git).
+  → `.png` + URP `.mat` in `Baked/` (that part is in git). This only adds *new* materials; existing ones are
+  kept, so manual tweaks survive. Tools > Portal 2 > Rebake All Materials resets every baked material to its .vmt.
 - **Models:** `.mdl` → FBX with Blender + the SourceIO addon (only installed on the desktop PC).
 - The extracted game files (`~/Downloads/portal2_extracted/pak01_dir/`) and Blender/SourceIO only
   exist on the desktop PC, so new Portal assets are converted there; the laptop works with what's baked.

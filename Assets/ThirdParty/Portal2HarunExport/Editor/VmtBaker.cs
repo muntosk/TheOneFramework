@@ -23,9 +23,23 @@ public static class VmtBaker
         public bool ClampU, ClampV, PointSample;
     }
 
+    // Default: only adds materials that don't exist yet, so tweaks made to already-baked materials
+    // (colour, smoothness, ...) survive. Textures are always (re)written.
     [MenuItem("Tools/Portal 2/Bake VMTs To Editable Materials")]
     [MenuItem("Assets/Portal 2/Bake VMTs To Editable Materials")]
-    static void BakeFromMenu() => Bake(GetSourceFolder());
+    static void BakeFromMenu() => Bake(GetSourceFolder(), overwriteExisting: false);
+
+    // Resets every baked material to what its .vmt says - throws away manual tweaks.
+    [MenuItem("Tools/Portal 2/Rebake All Materials (overwrites tweaks)")]
+    static void RebakeAllFromMenu()
+    {
+        if (EditorUtility.DisplayDialog("Rebake all Portal 2 materials",
+                "This resets EVERY baked material to its original .vmt settings. Any changes you made to them (colour, smoothness, textures, ...) are lost.\n\nMaterials you copied outside the Baked folder are not touched.",
+                "Rebake all", "Cancel"))
+        {
+            Bake(GetSourceFolder(), overwriteExisting: true);
+        }
+    }
 
     /// <summary>Uses the selected Project folder if it contains .vmt files, else the default folder.</summary>
     static string GetSourceFolder()
@@ -40,7 +54,7 @@ public static class VmtBaker
         return DefaultSourceFolder;
     }
 
-    public static void Bake(string sourceFolder)
+    public static void Bake(string sourceFolder, bool overwriteExisting = false)
     {
         if (!AssetDatabase.IsValidFolder(sourceFolder))
         {
@@ -106,6 +120,7 @@ public static class VmtBaker
                 AssetDatabase.StopAssetEditing();
             }
 
+            int created = 0, updated = 0, kept = 0;
             // Pass 3: build the materials against the baked textures.
             for (int i = 0; i < vmtPaths.Length; i++)
             {
@@ -113,6 +128,13 @@ public static class VmtBaker
                 EditorUtility.DisplayProgressBar("Baking VMT materials", vmtPath, i / (float)vmtPaths.Length);
 
                 string matPath = OutputPath(materialsRoot, outputRoot, vmtPath, ".mat");
+                var existing = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+                if (existing != null && !overwriteExisting)
+                {
+                    kept++;
+                    continue;
+                }
+
                 string name = Path.GetFileNameWithoutExtension(matPath);
                 var mat = VmtMaterialBuilder.Build(name, vmts[i], (texRef, kind) =>
                 {
@@ -122,9 +144,9 @@ public static class VmtBaker
                         : null;
                 });
 
-                var existing = AssetDatabase.LoadAssetAtPath<Material>(matPath);
                 if (existing != null)
                 {
+                    updated++;
                     EditorUtility.CopySerialized(mat, existing);
                     existing.name = name;
                     EditorUtility.SetDirty(existing);
@@ -132,12 +154,13 @@ public static class VmtBaker
                 }
                 else
                 {
+                    created++;
                     AssetDatabase.CreateAsset(mat, matPath);
                 }
             }
 
             AssetDatabase.SaveAssets();
-            Debug.Log($"[VmtBaker] Baked {vmtPaths.Length} materials and {baked.Count} textures into '{outputRoot}'.");
+            Debug.Log($"[VmtBaker] {created} new, {updated} overwritten, {kept} existing kept (untouched) materials and {baked.Count} textures in '{outputRoot}'.");
             EditorGUIUtility.PingObject(AssetDatabase.LoadAssetAtPath<Object>(outputRoot));
         }
         finally
