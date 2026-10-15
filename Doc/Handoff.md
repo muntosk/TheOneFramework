@@ -1,6 +1,7 @@
 # Handoff — where we left off (2026-10-15, laptop)
 
 Read this together with `CLAUDE.md` and `Doc/Narrative.md` at the start of the next session.
+What was discussed and decided along the way: `Doc/Sessions/2026-10-15_laptop.md`.
 
 ## Built this session
 
