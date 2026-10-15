@@ -39,7 +39,10 @@ namespace TheOneFramework.Portals
         private static readonly Dictionary<IPortalTraveller, float> lastWarpTime = new Dictionary<IPortalTraveller, float>();
         private const float warpCooldown = 0.25f;
         public bool IsPlaced { get; private set; } = false;
-        private Collider wallCollider;
+        // The surface it was shot onto plus anything else solid right behind it (e.g. a black wall a
+        // white panel is mounted on) - travellers stop colliding with all of these while inside the
+        // portal, otherwise that wall behind the panel would still block them.
+        private Collider[] wallColliders = new Collider[0];
 
         // Portals that are currently placed (a portal's GameObject is only active while placed).
         public static readonly List<Portal> ActivePortals = new List<Portal>();
@@ -101,19 +104,19 @@ namespace TheOneFramework.Portals
                     // stuck in this list forever and re-checking (and re-warping) from its new,
                     // unrelated position on every subsequent frame.
                     portalObjects.RemoveAt(i);
-                    traveller.ExitPortal(wallCollider);
+                    traveller.ExitPortal(wallColliders);
                 }
             }
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"[Portal] {name} OnTriggerEnter({other.name}) IsPlaced={IsPlaced} wallCollider={wallCollider}");
+            Debug.Log($"[Portal] {name} OnTriggerEnter({other.name}) IsPlaced={IsPlaced} walls={wallColliders.Length}");
             var obj = other.GetComponent<IPortalTraveller>();
             if (obj != null)
             {
                 portalObjects.Add(obj);
-                obj.SetIsInPortal(this, OtherPortal, wallCollider);
+                obj.SetIsInPortal(this, OtherPortal, wallColliders);
                 Debug.Log($"[Portal] {name} tracking traveller, count={portalObjects.Count}");
             }
         }
@@ -126,7 +129,7 @@ namespace TheOneFramework.Portals
             if (obj != null && portalObjects.Contains(obj))
             {
                 portalObjects.Remove(obj);
-                obj.ExitPortal(wallCollider);
+                obj.ExitPortal(wallColliders);
             }
         }
 
@@ -141,6 +144,32 @@ namespace TheOneFramework.Portals
             outlineRenderer.material.SetFloat(openID, open);
         }
 
+        // Turns collision between a traveller and every wall collider behind a portal off or on.
+        public static void IgnoreWalls(Collider traveller, Collider[] walls, bool ignore)
+        {
+            if (walls == null) return;
+            foreach (Collider wall in walls)
+            {
+                if (wall != null) Physics.IgnoreCollision(traveller, wall, ignore);
+            }
+        }
+
+        // The surface hit plus every static solid collider in a slab just behind the portal (its own
+        // rectangle, half a metre deep). Travellers move along +forward to go through, so that's "behind".
+        private Collider[] CollidersBehind(Collider surface)
+        {
+            const float depth = 0.5f;
+            Vector3 halfExtents = new Vector3(transform.lossyScale.x * 0.5f, transform.lossyScale.y * 0.5f, depth * 0.5f);
+            Vector3 centre = transform.position + transform.forward * (depth * 0.5f);
+
+            var walls = new List<Collider> { surface };
+            foreach (Collider c in Physics.OverlapBox(centre, halfExtents, transform.rotation, ~0, QueryTriggerInteraction.Ignore))
+            {
+                if (c != surface && c.attachedRigidbody == null && !(c is CharacterController)) walls.Add(c);
+            }
+            return walls.ToArray();
+        }
+
         public bool PlacePortal(Collider wallCollider, Vector3 pos, Quaternion rot)
         {
             testTransform.position = pos;
@@ -152,9 +181,9 @@ namespace TheOneFramework.Portals
 
             if (CheckOverlap())
             {
-                this.wallCollider = wallCollider;
                 transform.position = testTransform.position;
                 transform.rotation = testTransform.rotation;
+                this.wallColliders = CollidersBehind(wallCollider);
 
                 gameObject.SetActive(true);
                 IsPlaced = true;

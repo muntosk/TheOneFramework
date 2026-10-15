@@ -27,7 +27,15 @@ the user's own Portal-style puzzle game. The user is Dutch — reply in Dutch.
 
 ## Where the content is
 - Puzzle pieces: `Core/Portal/Prefabs/Gameplay/` (door, lift, buttons, plates, dispenser, portals).
-- Level kit: `Core/Portal/Prefabs/LevelKit/` (walls/floors/ceilings portalable or not, glass, fizzler, platforms).
+- Level kit: `Core/Portal/Prefabs/LevelKit/` (walls/floors/ceilings portalable or not, glass, fizzler, platforms,
+  `Hazards/ToxicWater`, `Chamber/Chamber` = a `ChamberShell` box sized in panels with the arrival/exit
+  `LiftConnector`s already attached — start every level from it; it also lights itself (ceiling strips) and places the
+  Portal chamber sign: set `chamberNumber` per level. The lift rooms carry two looks: `Dressing_Clean` (pipes, beams,
+  light strips) and the lift prefab's own `Decoration` (vines/debris) — toggle per level as the facility decays).
+  New repeatable building blocks are added to the builder
+  (`Core/Editor/PortalLevelKitBuilder.cs`) — that is the main way levels get built. Hand-made prefabs
+  (lift, door, buttons, dispenser and their variants in `Gameplay/`) stay hand-made; never hand-edit a
+  generated kit prefab (a rebuild overwrites it) — make a prefab variant instead.
 - Set dressing: `Demo/Dressing/` — `Models/` (Vines, LiftShaft, Electrical, Ending = conveyor belt +
   incinerator hatch, Facility = security camera + monitors), `Prefabs/Decals/`, `Prefabs/Scatter/`.
 - Audio: Portal SFX in `Core/Portal/Audio/`; game audio in `Demo/Audio/` (`Music/`, `Ambience/`,
@@ -50,5 +58,7 @@ World scale: 1 Source unit = 0.01905 m (all Portal assets, kit panels and conver
 
 Editor tools (menu), all re-runnable, updating assets in place:
 - Tools > Portal 2 > Build Set Dressing — decals, scatter prefabs, remaps converted model materials.
-- Tools > Portal > Build Level Kit — portalable/non-portalable panels, glass, fizzler, platforms.
+- Tools > Portal > Build Level Kit — portalable/non-portalable panels, glass, fizzler, platforms, ToxicWater
+  (URP water surface + KillZone). Tools > Portal > Replace Water With ToxicWater swaps loose water planes in open scenes.
+- Tools > UI > Build Main Menu Scene / Capture Menu Background (Scene View) — start menu scene.
 - Tools > Portal > Assign Portal 2 Sounds — fills the audio slots on prefabs and scenes.

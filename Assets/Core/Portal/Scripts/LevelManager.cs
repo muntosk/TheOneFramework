@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TheOneFramework.UI;
 
 namespace Core.Portal.Scripts
 {
@@ -76,7 +77,7 @@ namespace Core.Portal.Scripts
                 // old scene, taking the saved lift pose with it), so make sure we're a root first.
                 transform.SetParent(null);
                 DontDestroyOnLoad(gameObject);
-                currentLevelNumber = startLevelIndex;
+                currentLevelNumber = LevelNumberOf(SceneManager.GetActiveScene().name, startLevelIndex);
             }
             else
             {
@@ -84,42 +85,68 @@ namespace Core.Portal.Scripts
             }
         }
 
+        // Starts loading the next level in the background (e.g. as soon as the lift starts moving)
+        // without showing it yet; ActivateNextLevel() switches to it. False if there is no next level.
+        public bool PreloadNextLevel()
+        {
+            if (_preload != null) return true;
+
+            string nextSceneName = levelPrefix + (currentLevelNumber + 1);
+            if (!Application.CanStreamedLevelBeLoaded(nextSceneName))
+            {
+                Debug.LogWarning($"LevelManager: '{nextSceneName}' could not be found! The player might have finished the game, or the scene is missing from Build Settings.");
+                return false;
+            }
+
+            _preload = SceneManager.LoadSceneAsync(nextSceneName);
+            _preload.allowSceneActivation = false;
+            _preloadNumber = currentLevelNumber + 1;
+            return true;
+        }
+
+        // Switches to the preloaded level (preloading it now if that hadn't happened yet).
+        public void ActivateNextLevel()
+        {
+            if (!PreloadNextLevel()) return;
+
+            currentLevelNumber = _preloadNumber;
+            _preload.allowSceneActivation = true;
+            _preload = null;
+            SceneManager.sceneLoaded += FadeInIfNobodyDoes;
+        }
+
+        // The exit lift faded to black. An arrival lift in the new level fades back in itself; a level
+        // without one would otherwise stay black.
+        private void FadeInIfNobodyDoes(Scene scene, LoadSceneMode mode)
+        {
+            SceneManager.sceneLoaded -= FadeInIfNobodyDoes;
+            StartCoroutine(FadeInAfterStart());
+        }
+
+        private IEnumerator FadeInAfterStart()
+        {
+            yield return null;   // let every Start() run first (an arrival lift starts its own fade there)
+            yield return null;
+            if (ScreenFade.IsBlack && !ScreenFade.IsFading) ScreenFade.In(1.0f);
+        }
+
         // Call this function when the player enters the elevator
         public void LoadNextLevel()
         {
-            int nextLevelNumber = currentLevelNumber + 1;
-            string nextSceneName = levelPrefix + nextLevelNumber;
-
-            // Check if the next scene actually exists in the Build Settings
-            if (Application.CanStreamedLevelBeLoaded(nextSceneName))
-            {
-                currentLevelNumber = nextLevelNumber;
-                StartCoroutine(ElevatorLoadRoutine(nextSceneName));
-            }
-            else
-            {
-                Debug.LogWarning($"LevelManager: '{nextSceneName}' could not be found! The player might have finished the game, or the scene is missing from Build Settings.");
-                // Optional: Load a Main Menu or Credits scene here
-            }
+            ActivateNextLevel();
         }
 
-        private IEnumerator ElevatorLoadRoutine(string sceneName)
+        private AsyncOperation _preload;
+        private int _preloadNumber;
+
+        // "Level_3" -> 3, so pressing Play directly in any level still loads the right next one.
+        private int LevelNumberOf(string sceneName, int fallback)
         {
-            // 1. Play your elevator doors closing animation here
-            // 2. Wait for the animation to finish (e.g., 1.5 seconds)
-            yield return new WaitForSeconds(1.5f);
-
-            // 3. Load the scene asynchronously in the background
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-
-            // Wait until the new level is fully loaded
-            while (!asyncLoad.isDone)
+            if (sceneName.StartsWith(levelPrefix) && int.TryParse(sceneName.Substring(levelPrefix.Length), out int number))
             {
-                yield return null;
+                return number;
             }
-
-            // 4. The new scene is open! You can trigger the doors opening animation here
+            return fallback;
         }
     }
 }
-

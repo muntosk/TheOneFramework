@@ -160,8 +160,8 @@ freedom (e.g. sunset instead of daylight). Walk around freely until you reach th
 | Incinerator fire that turns on as you approach | ⬜ particles toggled by script |
 | Robot copies replaying your moves (window scene) | ⬜ set up StarterAssets robot + keyframed animations |
 | Volunteers training behind windows | ⬜ Mixamo humans with looping animations |
-| Surface scene (terrain 200×200, trees, grass, water, wind), used at start and end | ⬜ to build |
-| Facility entrance on the surface + recruitment posters | ⬜ to build |
+| Surface scene (terrain 200×200, trees, grass, water, wind), used at start and end — `Levels/Level_0` | ✅ start version (ending: sunset variant + hatch still to do) |
+| Facility entrance on the surface + recruitment posters | ✅ done (lift goes down into Level_1) |
 | End spot trigger on the surface (final line + end) | ⬜ small, framework triggers |
 
 ---

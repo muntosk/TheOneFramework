@@ -42,7 +42,7 @@ namespace TheOneFramework.Portals
 
         private Portal inPortal;
         private Portal outPortal;
-        private Collider wallCollider;
+        private Collider[] wallColliders;
 
         public Transform Transform => transform;
         public Vector3 WarpCheckPoint => transform.TransformPoint(controller.center);
@@ -53,18 +53,18 @@ namespace TheOneFramework.Portals
             thirdPersonController = GetComponent<ThirdPersonControllerFixed>();
         }
 
-        public void SetIsInPortal(Portal inPortal, Portal outPortal, Collider wallCollider)
+        public void SetIsInPortal(Portal inPortal, Portal outPortal, Collider[] wallColliders)
         {
             this.inPortal = inPortal;
             this.outPortal = outPortal;
-            this.wallCollider = wallCollider;
+            this.wallColliders = wallColliders;
 
-            Physics.IgnoreCollision(controller, wallCollider);
+            Portal.IgnoreWalls(controller, wallColliders, true);
         }
 
-        public void ExitPortal(Collider wallCollider)
+        public void ExitPortal(Collider[] wallColliders)
         {
-            Physics.IgnoreCollision(controller, wallCollider, false);
+            Portal.IgnoreWalls(controller, wallColliders, false);
         }
 
         // A wall is usually one single big collider, so Physics.IgnoreCollision can only turn its
@@ -88,7 +88,7 @@ namespace TheOneFramework.Portals
             // until you jumped. Checking the capsule's middle instead was far too forgiving.
             Vector3 checkPoint = transform.position + Vector3.up * walkInHeight;
             bool withinPortalRect = IsWithinPortalRect(inPortal, checkPoint);
-            Physics.IgnoreCollision(controller, wallCollider, withinPortalRect);
+            Portal.IgnoreWalls(controller, wallColliders, withinPortalRect);
         }
 
         private static bool IsWithinPortalRect(Portal portal, Vector3 worldPos)

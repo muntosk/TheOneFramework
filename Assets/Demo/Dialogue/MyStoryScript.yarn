@@ -2,3 +2,22 @@
 ---
 Hello World
 ===
+
+title: Chamber01_Welcome
+---
+S.A.F.E.-T: Welcome, Volunteer 32! Your safety is our number one priority. Number two is classified.
+S.A.F.E.-T: Please use the portal device to reach the exit. White surfaces accept portals. Black surfaces do not.
+S.A.F.E.-T: The green liquid below is completely harmless. Please do not touch it.
+===
+
+title: Chamber01_Ledge
+---
+S.A.F.E.-T: Excellent work. Your performance has been recorded for... quality purposes.
+===
+
+title: Surface_Elevator
+---
+S.A.F.E.-T: Welcome to the Safe Future Program, volunteer. Please step into the elevator.
+S.A.F.E.-T: By entering this elevator, you have agreed to help. You definitely signed the waiver.
+S.A.F.E.-T: Please do not ask to see the waiver.
+===

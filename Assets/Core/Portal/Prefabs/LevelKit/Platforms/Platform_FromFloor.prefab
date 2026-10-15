@@ -367,6 +367,6 @@ MonoBehaviour:
   extendedRotOffset: {x: 0, y: 0, z: 0}
   duration: 1.2
   startExtended: 0
-  extendClip: {fileID: 8300000, guid: b5f719df0bde55b4a98b4181a1cea865, type: 3}
-  retractClip: {fileID: 8300000, guid: 5c60fceb6afcf08ce8e34e275cfaeab3, type: 3}
+  extendClip: {fileID: 0}
+  retractClip: {fileID: 0}
   volume: 0.8

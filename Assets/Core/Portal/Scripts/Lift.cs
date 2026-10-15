@@ -3,6 +3,8 @@ using StarterAssets;
 using TheOneFramework.Portals;
 using UnityEngine;
 using TheOneFramework.Audio;
+using TheOneFramework.UI;
+using System.Collections;
 
 namespace Core.Portal.Scripts
 {
@@ -41,6 +43,11 @@ namespace Core.Portal.Scripts
         [SerializeField] private AudioClip stopClip;
         [SerializeField, Range(0.0f, 1.0f)] private float volume = 0.8f;
 
+        [Header("Transition")]
+        [Tooltip("Exit: the screen fades to black over the last this-many seconds of the ride, while the " +
+                 "next level has already loaded in the background. Arrival: fades back in over this long.")]
+        [SerializeField, Min(0.05f)] private float fadeDuration = 1.0f;
+
         private Vector3 _target;
         private bool _triggered;
         private bool _arrived;
@@ -48,6 +55,9 @@ namespace Core.Portal.Scripts
         private CharacterController _rider;
         private AudioSource _audioSource;
         private bool _moving;
+        private bool _hasNextLevel;
+        private bool _fadingOut;
+        private bool _arrivedByLift;
 
         private void Awake()
         {
@@ -107,6 +117,12 @@ namespace Core.Portal.Scripts
             {
                 _moving = true;
                 StartTravelAudio();
+
+                // Load the next level while riding, so there's no hitch at the top.
+                if (liftMode == LiftMode.Exit)
+                {
+                    _hasNextLevel = LevelManager.Instance.PreloadNextLevel();
+                }
             }
 
             Vector3 before = transform.position;
@@ -115,12 +131,32 @@ namespace Core.Portal.Scripts
             {
                 // World-space delta, since CharacterController.Move works in world space.
                 _rider.Move(transform.position - before);
+
+                // A lift shaft can pass through a KillZone (e.g. water above the arrival room).
+                RespawnBehaviour respawn = _rider.GetComponentInParent<RespawnBehaviour>();
+                if (respawn != null) respawn.MarkCarried();
+            }
+
+            // Fade out so it's black exactly when the lift reaches the top.
+            float secondsLeft = Vector3.Distance(transform.localPosition, _target) / speed;
+            if (liftMode == LiftMode.Exit && _hasNextLevel && !_fadingOut && secondsLeft <= fadeDuration)
+            {
+                _fadingOut = true;
+                ScreenFade.Out(Mathf.Max(secondsLeft, 0.05f));
             }
 
             if (transform.localPosition != _target) return;
 
             _arrived = true;
             _moving = false;
+            if (liftMode == LiftMode.Exit && _hasNextLevel)
+            {
+                // Keep the travel loop going - the arrival lift in the next level picks it up again.
+                SaveRiderPose();
+                StartCoroutine(SwitchLevelWhenBlack());
+                return;
+            }
+
             StopTravelAudio();
             if (liftMode == LiftMode.Exit)
             {
@@ -150,7 +186,8 @@ namespace Core.Portal.Scripts
             }
 
             _audioSource.volume = volume;
-            if (startClip != null)
+            // Arriving straight from the previous lift: it's one continuous ride, no second start sound.
+            if (startClip != null && !_arrivedByLift)
             {
                 _audioSource.PlayOneShot(startClip);
             }
@@ -284,6 +321,20 @@ namespace Core.Portal.Scripts
 
             // Don't wait for OnTriggerEnter - it may only fire after the lift has already started moving.
             _rider = player;
+
+            // The previous level's lift faded to black; fade back in while this one rises.
+            _arrivedByLift = true;
+            ScreenFade.SetBlack();
+            ScreenFade.In(fadeDuration);
+        }
+
+        private IEnumerator SwitchLevelWhenBlack()
+        {
+            while (!ScreenFade.IsBlack)
+            {
+                yield return null;
+            }
+            LevelManager.Instance.ActivateNextLevel();
         }
 
         private void OnDrawGizmosSelected()

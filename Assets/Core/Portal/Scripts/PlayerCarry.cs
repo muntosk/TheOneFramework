@@ -64,6 +64,17 @@ namespace TheOneFramework.Portals
             }
         }
 
+        // Lets go of the held object and puts it back where it started (e.g. when the player dies).
+        public void ReturnHeldToOrigin()
+        {
+            if (IsCarrying)
+            {
+                Carryable carryable = held;
+                Release(Vector3.zero);
+                carryable.ReturnToOrigin();
+            }
+        }
+
         private void Awake()
         {
             controller = GetComponent<CharacterController>();

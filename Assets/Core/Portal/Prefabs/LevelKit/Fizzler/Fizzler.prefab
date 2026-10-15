@@ -70,11 +70,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TheOneFramework.Portals.PortalFizzleField
   portalPair: {fileID: 0}
-  loopClip: {fileID: 8300000, guid: 130d3358032ee88529da62dd377ebd6a, type: 3}
-  portalFizzleClips:
-  - {fileID: 8300000, guid: 4713e71c0393b67668e4dcd94ec5fe29, type: 3}
-  - {fileID: 8300000, guid: c5a2a22a09526bc9eb7fefb69de8e138, type: 3}
-  objectFizzleClip: {fileID: 8300000, guid: 1c9127dbd33f2c29a86906a7a8609f30, type: 3}
+  loopClip: {fileID: 0}
+  portalFizzleClips: []
+  objectFizzleClip: {fileID: 0}
   volume: 0.8
 --- !u!1 &5643359057005432344
 GameObject:

@@ -9,5 +9,27 @@ namespace TheOneFramework.Portals
     [RequireComponent(typeof(Collider))]
     public class Carryable : MonoBehaviour
     {
+        private Vector3 originPosition;
+        private Quaternion originRotation;
+
+        private void Awake()
+        {
+            originPosition = transform.position;
+            originRotation = transform.rotation;
+        }
+
+        // Puts it back where it was placed (or dispensed), e.g. after falling into a KillZone.
+        public void ReturnToOrigin()
+        {
+            var body = GetComponent<Rigidbody>();
+            if (!body.isKinematic)
+            {
+                body.linearVelocity = Vector3.zero;
+                body.angularVelocity = Vector3.zero;
+            }
+            body.position = originPosition;
+            body.rotation = originRotation;
+            transform.SetPositionAndRotation(originPosition, originRotation);
+        }
     }
 }

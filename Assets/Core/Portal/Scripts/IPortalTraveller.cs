@@ -14,8 +14,9 @@ namespace TheOneFramework.Portals
         // like Source does. Using the pivot made the player (pivot at the feet) warp the moment
         // their toes touched a floor portal, coming out the other side with no speed at all.
         Vector3 WarpCheckPoint { get; }
-        void SetIsInPortal(Portal inPortal, Portal outPortal, Collider wallCollider);
-        void ExitPortal(Collider wallCollider);
+        // wallColliders: everything solid right behind the portal (see Portal.CollidersBehind).
+        void SetIsInPortal(Portal inPortal, Portal outPortal, Collider[] wallColliders);
+        void ExitPortal(Collider[] wallColliders);
         void Warp();
     }
 }

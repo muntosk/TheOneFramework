@@ -19,7 +19,7 @@ namespace TheOneFramework.Portals
 
         private Portal inPortal;
         private Portal outPortal;
-        private Collider wallCollider;
+        private Collider[] wallColliders;
 
         private new Rigidbody rigidbody;
         protected new Collider collider;
@@ -69,22 +69,22 @@ namespace TheOneFramework.Portals
             }
         }
 
-        public void SetIsInPortal(Portal inPortal, Portal outPortal, Collider wallCollider)
+        public void SetIsInPortal(Portal inPortal, Portal outPortal, Collider[] wallColliders)
         {
             this.inPortal = inPortal;
             this.outPortal = outPortal;
-            this.wallCollider = wallCollider;
+            this.wallColliders = wallColliders;
 
-            Physics.IgnoreCollision(collider, wallCollider);
+            Portal.IgnoreWalls(collider, wallColliders, true);
 
             cloneObject.SetActive(false);
 
             ++inPortalCount;
         }
 
-        public void ExitPortal(Collider wallCollider)
+        public void ExitPortal(Collider[] wallColliders)
         {
-            Physics.IgnoreCollision(collider, wallCollider, false);
+            Portal.IgnoreWalls(collider, wallColliders, false);
             --inPortalCount;
 
             if (inPortalCount == 0)
@@ -105,7 +105,7 @@ namespace TheOneFramework.Portals
             }
 
             bool withinPortalRect = IsWithinPortalRect(inPortal, transform.position);
-            Physics.IgnoreCollision(collider, wallCollider, withinPortalRect);
+            Portal.IgnoreWalls(collider, wallColliders, withinPortalRect);
         }
 
         private static bool IsWithinPortalRect(Portal portal, Vector3 worldPos)
