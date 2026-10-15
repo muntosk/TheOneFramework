@@ -153,8 +153,9 @@ freedom (e.g. sunset instead of daylight). Walk around freely until you reach th
 | UI font Titillium Web — `Demo/UI/Fonts/` | ✅ in project (still make a TextMeshPro font asset) |
 | Human characters for Wes + volunteers (Mixamo) | ⬜ download yourself (Adobe login) |
 | Robot copies behind the window | ✅ StarterAssets robot model already in project |
-| S.A.F.E.-T announcer lines (text on screen, through Yarn) | ⬜ to build |
-| Conversation with Wes (Yarn, 2–3 choices) | ⬜ to build — framework has `DialogueTrigger`, `SpeechBubbles` |
+| S.A.F.E.-T announcer lines (text on screen, through Yarn) | 🟡 surface, chamber 1 and 2 done; chambers 3+ to write |
+| Conversation with Wes (Yarn, 2–3 choices) | ✅ `Chamber02_Wes` (E chooses an option); Wes is still a placeholder model |
+| Chambers 1 & 2 (`Level_1`, `Level_2`) | ✅ built (portal gun pick-up in chamber 1, cube/plate/dispenser + Wes in chamber 2) |
 | "Bang on glass" prompt + "RUN!" speech bubble | ⬜ framework `ProximityTrigger` + `SpeechBubbles` |
 | Conveyor belt that carries the player | ⬜ small script (same idea as the lift carrying you) |
 | Incinerator fire that turns on as you approach | ⬜ particles toggled by script |

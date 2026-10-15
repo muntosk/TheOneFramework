@@ -34,6 +34,8 @@ namespace StarterAssets
         // so the next level (e.g. after a Lift) starts in the same view the player left in.
         private static bool isFirstPerson;
 
+        public static bool IsFirstPerson => isFirstPerson;
+
         // Domain reload is off in this project, so statics would otherwise carry over between
         // Play sessions in the editor too. Start each Play session in third person again.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

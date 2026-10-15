@@ -58,11 +58,68 @@ namespace TheOneFramework.Portals
         // can't bounce the shot back and forth forever.
         private const int maxPortalPassthroughs = 8;
 
+        [Header("Pick-up")]
+        [Tooltip("Untick in levels where the gun still has to be picked up (PortalGunPickup) - " +
+            "until then nothing fires and the gun in the hand and the crosshair are hidden.")]
+        [SerializeField]
+        private bool equippedAtStart = true;
+
+        [Tooltip("The gun model in the player's hand, shown only while equipped. Gets parented to the " +
+            "right hand bone at the pose below.")]
+        [SerializeField]
+        private GameObject heldModel;
+
+        [Tooltip("Position of the held model in the right hand bone's space.")]
+        [SerializeField]
+        private Vector3 heldPosition;
+
+        [Tooltip("Rotation (euler) of the held model in the right hand bone's space.")]
+        [SerializeField]
+        private Vector3 heldRotation;
+
+        [Tooltip("Animator layer with the gun-holding pose (upper body only); faded in while equipped.")]
+        [SerializeField]
+        private string holdLayerName = "PortalGun";
+
+        [Header("First person")]
+        [Tooltip("Where the gun sits in front of the camera in first person, in camera space (Portal-style, bottom right).")]
+        [SerializeField]
+        private Vector3 viewModelPosition = new Vector3(0.2f, -0.2f, 0.4f);
+
+        [SerializeField]
+        private Vector3 viewModelRotation;
+
+        private Animator animator;
+        private int holdLayer = -1;
+        private GameObject viewModel;
+
+        // Once picked up the gun stays with the player in the next levels (each level has its own
+        // PlayerRig, so the instance itself can't remember it). Reset when a new game starts.
+        private static bool pickedUp;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        public static void ResetPickup() => pickedUp = false;
+
+        public bool IsEquipped { get; private set; }
+
         private StarterAssetsInputs input;
         private PlayerCarry carry;
 
         private bool firePortal1Held;
         private bool firePortal2Held;
+
+        public void Equip()
+        {
+            pickedUp = true;
+            SetEquipped(true);
+        }
+
+        private void SetEquipped(bool equipped)
+        {
+            IsEquipped = equipped;
+            if (heldModel != null) heldModel.SetActive(equipped);
+            if (crosshair != null) crosshair.SetVisible(equipped);
+        }
 
         private void Awake()
         {
@@ -85,13 +142,63 @@ namespace TheOneFramework.Portals
             {
                 GameAudio.Route(audioSource, AudioChannel.Sfx);
             }
+
+            animator = GetComponentInChildren<Animator>();
+            if (animator != null)
+            {
+                holdLayer = animator.GetLayerIndex(holdLayerName);
+                Transform rightHand = animator.isHuman ? animator.GetBoneTransform(HumanBodyBones.RightHand) : null;
+                if (heldModel != null && rightHand != null)
+                {
+                    heldModel.transform.SetParent(rightHand, false);
+                    heldModel.transform.SetLocalPositionAndRotation(heldPosition, Quaternion.Euler(heldRotation));
+                }
+            }
+
+            CreateViewModel();
+            SetEquipped(equippedAtStart || pickedUp);
+            if (holdLayer >= 0) animator.SetLayerWeight(holdLayer, IsEquipped ? 1.0f : 0.0f);
+        }
+
+        // First person shows a copy of the gun in front of the camera instead of the one in the hand,
+        // which hides with the body (FirstPersonHidden layer) but still shows up in portals.
+        private void CreateViewModel()
+        {
+            if (heldModel == null || aimCamera == null) return;
+
+            viewModel = Instantiate(heldModel, aimCamera.transform);
+            viewModel.name = "PortalGunViewModel";
+            viewModel.transform.SetLocalPositionAndRotation(viewModelPosition, Quaternion.Euler(viewModelRotation));
+            SetLayer(viewModel.transform, LayerMask.NameToLayer("ViewModel"));
+            foreach (var r in viewModel.GetComponentsInChildren<Renderer>(true))
+            {
+                r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
+            viewModel.SetActive(false);
+
+            SetLayer(heldModel.transform, LayerMask.NameToLayer("FirstPersonHidden"));
+        }
+
+        private static void SetLayer(Transform root, int layer)
+        {
+            if (layer < 0) return;
+            foreach (var t in root.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = layer;
+        }
+
+        private void LateUpdate()
+        {
+            if (viewModel != null) viewModel.SetActive(IsEquipped && CameraModeToggle.IsFirstPerson);
+
+            if (holdLayer < 0) return;
+            float weight = Mathf.MoveTowards(animator.GetLayerWeight(holdLayer), IsEquipped ? 1.0f : 0.0f, 4.0f * Time.deltaTime);
+            animator.SetLayerWeight(holdLayer, weight);
         }
 
         private void Update()
         {
             // Block portal firing while carrying something so LMB is free to launch the carried
             // object instead (see PlayerCarry.Launch()).
-            bool canFire = carry == null || (!carry.IsCarrying && !carry.LaunchedThisFrame);
+            bool canFire = IsEquipped && (carry == null || (!carry.IsCarrying && !carry.LaunchedThisFrame));
 
             if (canFire && input.firePortal1 && !firePortal1Held)
             {

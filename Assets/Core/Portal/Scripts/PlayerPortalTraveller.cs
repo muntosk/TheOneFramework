@@ -64,7 +64,14 @@ namespace TheOneFramework.Portals
 
         public void ExitPortal(Collider[] wallColliders)
         {
-            Portal.IgnoreWalls(controller, wallColliders, false);
+            // After a warp this is the portal just left; don't turn back on a wall the exit portal
+            // shares with it (both portals on one wall), that one is still being passed through.
+            foreach (var wall in wallColliders ?? new Collider[0])
+            {
+                bool stillPassing = !ReferenceEquals(wallColliders, this.wallColliders) &&
+                    this.wallColliders != null && System.Array.IndexOf(this.wallColliders, wall) >= 0;
+                if (wall != null && !stillPassing) Physics.IgnoreCollision(controller, wall, false);
+            }
         }
 
         // A wall is usually one single big collider, so Physics.IgnoreCollision can only turn its
@@ -79,6 +86,14 @@ namespace TheOneFramework.Portals
 
             if (inPortal == null)
             {
+                return;
+            }
+
+            // The portal was shot somewhere else (or removed) since: its old walls are solid again.
+            if (!inPortal.IsPlaced || !ReferenceEquals(inPortal.WallColliders, wallColliders))
+            {
+                Portal.IgnoreWalls(controller, wallColliders, false);
+                inPortal = null;
                 return;
             }
 
@@ -104,8 +119,15 @@ namespace TheOneFramework.Portals
             float halfWidth = t.lossyScale.x * 0.5f;
             float halfHeight = t.lossyScale.y * 0.5f;
 
-            return Mathf.Abs(horiz) <= halfWidth && Mathf.Abs(vert) <= halfHeight;
+            // And close to it: without this, standing anywhere in the room in line with the portal
+            // counted as "in the portal", turning the wall behind it off from across the room.
+            float depth = Vector3.Dot(offset, t.forward);
+
+            return Mathf.Abs(horiz) <= halfWidth && Mathf.Abs(vert) <= halfHeight && Mathf.Abs(depth) <= maxPortalDepth;
         }
+
+        // How far in front of / behind a portal's plane still counts as being in it.
+        private const float maxPortalDepth = 1.0f;
 
         // Portal 2-style funneling: while falling, predict where you'll reach the height of each
         // placed floor portal, and if that spot is near the portal, nudge your sideways speed so
@@ -245,6 +267,8 @@ namespace TheOneFramework.Portals
 
         public void Warp()
         {
+            if (inPortal == null || outPortal == null) return;   // its portal was moved meanwhile
+
             Transform inTransform = inPortal.transform;
             Transform outTransform = outPortal.transform;
 
@@ -296,6 +320,12 @@ namespace TheOneFramework.Portals
             var tmp = inPortal;
             inPortal = outPortal;
             outPortal = tmp;
+
+            // From now on it's the walls behind the portal we came out of that matter - keeping the
+            // old ones let you walk through the entry wall later whenever you stood in line with the
+            // exit portal.
+            wallColliders = inPortal.WallColliders;
+            Portal.IgnoreWalls(controller, wallColliders, true);
         }
     }
 }

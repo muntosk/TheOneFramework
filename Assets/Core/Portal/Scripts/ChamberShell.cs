@@ -42,6 +42,9 @@ namespace TheOneFramework.Portals
         [Tooltip("The Portal-style chamber sign next to the entrance. 0 = no sign.")]
         [Min(0)] public int chamberNumber = 1;
         [Min(1)] public int chamberTotal = 19;
+        [Tooltip("The lift rooms' own decoration (vines, debris, grime, extra pipes) on top of the clean " +
+            "Portal dressing. Untick for a spotless facility.")]
+        public bool liftDecoration = true;
 
         [Header("Parts (filled in by Tools > Portal > Build Level Kit)")]
         public GameObject wallPrefab;
@@ -175,6 +178,9 @@ namespace TheOneFramework.Portals
             }
             connector.localPosition = position;
             connector.localRotation = rotation;
+
+            Transform decoration = connector.Find("Lift/Decoration");
+            if (decoration != null) decoration.gameObject.SetActive(liftDecoration);
         }
 
         private void OnDrawGizmosSelected()

@@ -10960,6 +10960,10 @@ PrefabInstance:
       propertyPath: crosshair
       value: 
       objectReference: {fileID: 1487826769}
+    - target: {fileID: 2624161918836315742, guid: 4d6ee487da08c3e4da1f5bd67864f90a, type: 3}
+      propertyPath: equippedAtStart
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4272747233180640800, guid: 4d6ee487da08c3e4da1f5bd67864f90a, type: 3}
       propertyPath: m_Name
       value: PlayerRig

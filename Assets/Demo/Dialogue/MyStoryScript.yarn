@@ -6,7 +6,14 @@ Hello World
 title: Chamber01_Welcome
 ---
 S.A.F.E.-T: Welcome, Volunteer 32! Your safety is our number one priority. Number two is classified.
-S.A.F.E.-T: Please use the portal device to reach the exit. White surfaces accept portals. Black surfaces do not.
+S.A.F.E.-T: Please collect the portal device from the pedestal. Do not point it at your face.
+===
+
+title: Chamber01_Gun
+---
+S.A.F.E.-T: Wonderful. The device is now registered to you. And you to it.
+S.A.F.E.-T: The left mouse button fires a blue portal. The right mouse button fires an orange one.
+S.A.F.E.-T: White surfaces accept portals. Black surfaces do not. Please use them to reach the exit.
 S.A.F.E.-T: The green liquid below is completely harmless. Please do not touch it.
 ===
 
@@ -20,4 +27,35 @@ title: Surface_Elevator
 S.A.F.E.-T: Welcome to the Safe Future Program, volunteer. Please step into the elevator.
 S.A.F.E.-T: By entering this elevator, you have agreed to help. You definitely signed the waiver.
 S.A.F.E.-T: Please do not ask to see the waiver.
+===
+
+title: Chamber02_Intro
+---
+S.A.F.E.-T: Welcome to Chamber 02. This chamber introduces the Weighted Safety Cube.
+S.A.F.E.-T: Press F to pick up the cube, and F again to put it down. Our engineers needed three attempts to learn this.
+S.A.F.E.-T: Place the cube on the button to open the exit. Please do not become attached to the cube. It will not become attached to you.
+===
+
+title: Chamber02_Wes
+---
+Wes: Hey. Hey! Over here. The glass.
+Wes: Do you also get the feeling the walls are... watching?
+-> Who are you?
+    Wes: Wes. Volunteer 31. Your neighbour, I guess. They gave me a cube too.
+-> The walls are just walls.
+    Wes: Sure. Walls with cameras. Count them sometime.
+-> Say nothing.
+    Wes: Not a talker. That's fine. I talk enough for two when I'm nervous. Which is always.
+Wes: They keep saying it's about the portals. It's not about the portals.
+Wes: It's about how fast we solve things. Every time I finish a test, that camera turns a little.
+-> Maybe they just want good data.
+    Wes: Data. Yeah. That's what scares me.
+-> I'll keep an eye out.
+    Wes: Good. And if you ever find out where the finished ones go... tell me?
+S.A.F.E.-T: Volunteer 31, please stop talking to the glass. The glass is busy.
+===
+
+title: Chamber02_Plate
+---
+S.A.F.E.-T: Well done. The cube has been placed. Your movements have been saved. For your safety.
 ===

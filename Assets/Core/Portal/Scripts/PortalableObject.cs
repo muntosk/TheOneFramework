@@ -84,7 +84,14 @@ namespace TheOneFramework.Portals
 
         public void ExitPortal(Collider[] wallColliders)
         {
-            Portal.IgnoreWalls(collider, wallColliders, false);
+            // After a warp this is the portal just left; don't turn back on a wall the exit portal
+            // shares with it (both portals on one wall), that one is still being passed through.
+            foreach (var wall in wallColliders ?? new Collider[0])
+            {
+                bool stillPassing = !ReferenceEquals(wallColliders, this.wallColliders) &&
+                    this.wallColliders != null && System.Array.IndexOf(this.wallColliders, wall) >= 0;
+                if (wall != null && !stillPassing) Physics.IgnoreCollision(collider, wall, false);
+            }
             --inPortalCount;
 
             if (inPortalCount == 0)
@@ -101,6 +108,14 @@ namespace TheOneFramework.Portals
         {
             if (inPortal == null)
             {
+                return;
+            }
+
+            // The portal was shot somewhere else (or removed) since: its old walls are solid again.
+            if (!inPortal.IsPlaced || !ReferenceEquals(inPortal.WallColliders, wallColliders))
+            {
+                Portal.IgnoreWalls(collider, wallColliders, false);
+                inPortal = null;
                 return;
             }
 
@@ -121,11 +136,16 @@ namespace TheOneFramework.Portals
             float halfWidth = t.lossyScale.x * 0.5f;
             float halfHeight = t.lossyScale.y * 0.5f;
 
-            return Mathf.Abs(horiz) <= halfWidth && Mathf.Abs(vert) <= halfHeight;
+            // And close to it, not just anywhere in line with it across the room.
+            float depth = Vector3.Dot(offset, t.forward);
+
+            return Mathf.Abs(horiz) <= halfWidth && Mathf.Abs(vert) <= halfHeight && Mathf.Abs(depth) <= 1.0f;
         }
 
         public virtual void Warp()
         {
+            if (inPortal == null || outPortal == null) return;   // its portal was moved meanwhile
+
             var inTransform = inPortal.transform;
             var outTransform = outPortal.transform;
 
@@ -148,6 +168,13 @@ namespace TheOneFramework.Portals
             var tmp = inPortal;
             inPortal = outPortal;
             outPortal = tmp;
+
+            // Right after the warp half the object is still inside the wall behind the exit portal,
+            // and that portal's trigger only picks it up on the next physics step - until then the
+            // wall would shove it around. Ignore it straight away; Update() turns it back on once
+            // the object is out of the portal's rectangle.
+            wallColliders = inPortal.WallColliders;
+            Portal.IgnoreWalls(collider, wallColliders, true);
         }
     }
 }

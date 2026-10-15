@@ -36,6 +36,13 @@ namespace TheOneFramework.Portals
             outPortalImg.color = defaultColour;
         }
 
+        // Hidden while the player has no portal gun yet.
+        public void SetVisible(bool visible)
+        {
+            inPortalImg.enabled = visible;
+            outPortalImg.enabled = visible;
+        }
+
         private static Color WithFullAlpha(Color color)
         {
             color.a = 1.0f;

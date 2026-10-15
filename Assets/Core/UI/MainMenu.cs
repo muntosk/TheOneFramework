@@ -97,6 +97,8 @@ namespace TheOneFramework.UI
         {
             if (loading) return;
             loading = true;
+            // A new game: the portal gun has to be picked up again.
+            TheOneFramework.Portals.PortalGun.ResetPickup();
             StartCoroutine(LoadLevel());
         }
 

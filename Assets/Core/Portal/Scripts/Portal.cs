@@ -43,6 +43,7 @@ namespace TheOneFramework.Portals
         // white panel is mounted on) - travellers stop colliding with all of these while inside the
         // portal, otherwise that wall behind the panel would still block them.
         private Collider[] wallColliders = new Collider[0];
+        public Collider[] WallColliders => wallColliders;
 
         // Portals that are currently placed (a portal's GameObject is only active while placed).
         public static readonly List<Portal> ActivePortals = new List<Portal>();
@@ -218,50 +219,47 @@ namespace TheOneFramework.Portals
         // at the cost of a bit less protection against the portal overhanging past that edge.
         private const float edgeMargin = 0.02f;
 
-        // Ensure the portal cannot extend past the edge of a surface.
+        // True when the surface at this point of the portal (x/y in the portal's plane) accepts portals.
+        // Just finding *a* collider there isn't enough: white panels sit on top of black walls, so
+        // past a panel's edge there's still a wall - only not one a portal may hang over.
+        private bool OnPortalableSurface(Vector2 localPoint)
+        {
+            Vector3 from = TestPoint(new Vector3(localPoint.x, localPoint.y, -0.1f));
+            var hits = Physics.RaycastAll(from, testTransform.forward, 0.2f, placementMask, QueryTriggerInteraction.Ignore);
+
+            // The nearest hit that isn't one of the portals themselves.
+            RaycastHit? nearest = null;
+            foreach (var hit in hits)
+            {
+                if (hit.collider.GetComponentInParent<Portal>() != null) continue;
+                if (nearest == null || hit.distance < nearest.Value.distance) nearest = hit;
+            }
+            if (nearest == null) return false;
+
+            var surface = nearest.Value.collider.GetComponentInParent<PortalSurface>();
+            return surface == null || surface.AllowPortals;
+        }
+
+        // Ensure the portal cannot extend past the edge of a (portalable) surface: while an edge's
+        // middle isn't over one, slide the portal inwards a little.
         private void FixOverhangs()
         {
-            float halfWidth = HalfWidth;
-            float halfHeight = HalfHeight;
-
-            var testPoints = new List<Vector3>
+            float halfWidth = HalfWidth + edgeMargin;
+            float halfHeight = HalfHeight + edgeMargin;
+            var edges = new[]
             {
-                new Vector3(-(halfWidth + edgeMargin),  0.0f, 0.1f),
-                new Vector3(  halfWidth + edgeMargin,   0.0f, 0.1f),
-                new Vector3( 0.0f, -(halfHeight + edgeMargin), 0.1f),
-                new Vector3( 0.0f,   halfHeight + edgeMargin,  0.1f)
+                new Vector2(-halfWidth, 0.0f), new Vector2(halfWidth, 0.0f),
+                new Vector2(0.0f, -halfHeight), new Vector2(0.0f, halfHeight)
             };
 
-            var testDirs = new List<Vector3>
+            const float step = 0.02f;
+            foreach (var edge in edges)
             {
-                 Vector3.right,
-                -Vector3.right,
-                 Vector3.up,
-                -Vector3.up
-            };
-
-            var testDists = new List<float>
-            {
-                halfWidth + edgeMargin, halfWidth + edgeMargin,
-                halfHeight + edgeMargin, halfHeight + edgeMargin
-            };
-
-            for (int i = 0; i < 4; ++i)
-            {
-                RaycastHit hit;
-                Vector3 raycastPos = TestPoint(testPoints[i]);
-                Vector3 raycastDir = testTransform.TransformDirection(testDirs[i]);
-
-                // This edge already sits over the surface - move on to check the next edge
-                // (this used to `break`, which skipped every remaining edge once one was fine).
-                if (Physics.CheckSphere(raycastPos, 0.05f, placementMask))
+                Vector3 inwards = testTransform.rotation * -(Vector3)edge.normalized;
+                float maxShift = edge.magnitude * 2.0f;
+                for (float moved = 0.0f; moved < maxShift && !OnPortalableSurface(edge); moved += step)
                 {
-                    continue;
-                }
-                else if (Physics.Raycast(raycastPos, raycastDir, out hit, testDists[i], placementMask))
-                {
-                    var offset = hit.point - raycastPos;
-                    testTransform.Translate(offset, Space.World);
+                    testTransform.position += inwards * step;
                 }
             }
         }
@@ -303,20 +301,8 @@ namespace TheOneFramework.Portals
             float halfHeight = HalfHeight;
             var checkExtents = new Vector3(halfWidth - edgeMargin, halfHeight - edgeMargin, 0.05f);
 
-            var checkPositions = new Vector3[]
-            {
-                TestPoint(new Vector3( 0.0f,  0.0f, -0.1f)),
-
-                TestPoint(new Vector3(-halfWidth, -halfHeight, -0.1f)),
-                TestPoint(new Vector3(-halfWidth,  halfHeight, -0.1f)),
-                TestPoint(new Vector3( halfWidth, -halfHeight, -0.1f)),
-                TestPoint(new Vector3( halfWidth,  halfHeight, -0.1f)),
-
-                testTransform.rotation * new Vector3(0.0f, 0.0f, 0.2f)
-            };
-
             // Ensure the portal does not intersect walls.
-            var intersections = Physics.OverlapBox(checkPositions[0], checkExtents, testTransform.rotation, placementMask);
+            var intersections = Physics.OverlapBox(TestPoint(new Vector3(0.0f, 0.0f, -0.1f)), checkExtents, testTransform.rotation, placementMask);
 
             if (intersections.Length > 1)
             {
@@ -333,21 +319,24 @@ namespace TheOneFramework.Portals
                 }
             }
 
-            // Ensure the portal corners overlap a surface.
+            // Ensure the portal corners overlap a surface that accepts portals.
             bool isOverlapping = true;
 
-            var cornerNames = new[] { "bottom-left", "top-left", "bottom-right", "top-right" };
-            for (int i = 1; i < checkPositions.Length - 1; ++i)
+            float cornerX = halfWidth - edgeMargin, cornerY = halfHeight - edgeMargin;
+            var corners = new[]
             {
-                bool hit = Physics.Linecast(checkPositions[i],
-                    checkPositions[i] + checkPositions[checkPositions.Length - 1], placementMask);
-
-                if (!hit)
+                new Vector2(-cornerX, -cornerY), new Vector2(-cornerX, cornerY),
+                new Vector2(cornerX, -cornerY), new Vector2(cornerX, cornerY)
+            };
+            var cornerNames = new[] { "bottom-left", "top-left", "bottom-right", "top-right" };
+            for (int i = 0; i < corners.Length; ++i)
+            {
+                bool onSurface = OnPortalableSurface(corners[i]);
+                if (!onSurface)
                 {
-                    Debug.Log($"[Portal] {name} CheckOverlap failed: {cornerNames[i - 1]} corner has no surface underneath it");
+                    Debug.Log($"[Portal] {name} CheckOverlap failed: {cornerNames[i]} corner isn't over a portal surface");
                 }
-
-                isOverlapping &= hit;
+                isOverlapping &= onSurface;
             }
 
             return isOverlapping;

@@ -5,6 +5,8 @@ Started from a teacher's framework (Yarn Spinner dialogue, triggers, inventory, 
 the user's own Portal-style puzzle game. The user is Dutch — reply in Dutch.
 
 ## Read first
+- `Doc/Handoff.md` — where the last session stopped: current state, next steps, machine setup. Per-session logs
+  (what was asked and decided) are in `Doc/Sessions/`. Update both at the end of a session.
 - `Doc/Narrative.md` — the story ("You Are No Longer Required"), game flow, build list and planning.
 - `Assets/STRUCTURE.md` — where things go (per system, then per type, PascalCase folders).
 - `Doc/UF_self_assessment_*.xlsx` and `Doc/Design Fundamentals Assessment Template*.docx` — the rubrics.
@@ -31,7 +33,8 @@ the user's own Portal-style puzzle game. The user is Dutch — reply in Dutch.
   `Hazards/ToxicWater`, `Chamber/Chamber` = a `ChamberShell` box sized in panels with the arrival/exit
   `LiftConnector`s already attached — start every level from it; it also lights itself (ceiling strips) and places the
   Portal chamber sign: set `chamberNumber` per level. The lift rooms carry two looks: `Dressing_Clean` (pipes, beams,
-  light strips) and the lift prefab's own `Decoration` (vines/debris) — toggle per level as the facility decays).
+  light strips) and the lift prefab's own `Decoration` (vines/debris/grime); both are on in every level, the shell's
+  `liftDecoration` tick turns the `Decoration` off for a level).
   New repeatable building blocks are added to the builder
   (`Core/Editor/PortalLevelKitBuilder.cs`) — that is the main way levels get built. Hand-made prefabs
   (lift, door, buttons, dispenser and their variants in `Gameplay/`) stay hand-made; never hand-edit a

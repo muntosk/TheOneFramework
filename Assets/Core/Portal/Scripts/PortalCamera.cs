@@ -48,6 +48,11 @@ namespace TheOneFramework.Portals
             portals[1].Renderer.material.mainTexture = tempTexture2;
 
             portalCamera.GetUniversalAdditionalCameraData().renderShadows = renderShadowsInPortals;
+
+            // The first-person gun hangs in front of the player's camera; seen through a portal it
+            // would float in mid-air, so portal views skip it (the body's own gun shows there instead).
+            int viewModelLayer = LayerMask.NameToLayer("ViewModel");
+            if (viewModelLayer >= 0) portalCamera.cullingMask &= ~(1 << viewModelLayer);
         }
 
         private void OnEnable()
