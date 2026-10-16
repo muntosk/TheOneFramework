@@ -13,8 +13,31 @@ public class SpeechBubbleBehaviour : MonoBehaviour
     private float borderSize = 0.05f;
     private float tailSize = 0.05f;
 
-    void Start() {
-        //borderSize = 
+    // Bubbles are drawn on top of everything (walls, glass), so someone talking behind a window or
+    // around a corner can still be read. Materials are shared between all bubbles.
+    private static Material overlayImageMaterial;
+    private static readonly System.Collections.Generic.Dictionary<Material, Material> overlayTextMaterials = new System.Collections.Generic.Dictionary<Material, Material>();
+
+    void Awake() {
+        int always = (int)UnityEngine.Rendering.CompareFunction.Always;
+        foreach (var image in GetComponentsInChildren<UnityEngine.UI.Image>(true)) {
+            if (overlayImageMaterial == null) {
+                overlayImageMaterial = new Material(image.material);
+                overlayImageMaterial.SetInt("unity_GUIZTestMode", always);
+                overlayImageMaterial.renderQueue = 4000;
+            }
+            image.material = overlayImageMaterial;
+        }
+        foreach (var text in GetComponentsInChildren<TextMeshPro>(true)) {
+            Material source = text.fontSharedMaterial;
+            if (!overlayTextMaterials.TryGetValue(source, out Material overlay) || overlay == null) {
+                overlay = new Material(source);
+                overlay.SetInt("unity_GUIZTestMode", always);
+                overlay.renderQueue = 4001;
+                overlayTextMaterials[source] = overlay;
+            }
+            text.fontSharedMaterial = overlay;
+        }
     }
 
     public float GetHeight() {

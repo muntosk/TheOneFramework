@@ -48,6 +48,8 @@ MonoBehaviour:
   cubePrefab: {fileID: 8711498011744669733, guid: 4dbd2c7fdf4f58f689b8687a57de3758, type: 3}
   spawnPoint: {fileID: 0}
   spawnOnStart: 0
+  respawnWhenLost: 1
+  respawnDelay: 1.5
   dispenseClip: {fileID: 8300000, guid: fd98dd06141f3c873a804b1eaaf844a0, type: 3}
   volume: 0.8
 --- !u!1001 &582240349985894377

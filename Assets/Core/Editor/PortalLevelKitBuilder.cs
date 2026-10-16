@@ -156,8 +156,8 @@ namespace TheOneFramework.EditorTools
             var ripples = AssetDatabase.LoadAssetAtPath<Texture2D>(Baked + "effects/fizzler_ripples_dim.png");
             if (ripples == null) Debug.LogWarning("[LevelKit] effects/fizzler_ripples_dim.png not baked yet.");
 
-            mat.SetTexture("_BaseMap", ripples);
-            mat.SetColor("_BaseColor", new Color(0.35f, 0.75f, 1.0f, 1.0f) * 1.5f);
+            mat.SetTexture("_BaseMap", ripples != null ? GreyFromGreen(ripples, "Assets/Core/Portal/Materials/FizzlerRipples.png") : null);
+            mat.SetColor("_BaseColor", new Color(0.25f, 0.6f, 1.0f, 1.0f) * 1.5f);
             mat.SetFloat("_Surface", 1.0f); // transparent
             mat.SetFloat("_Blend", 2.0f);   // additive
             mat.SetFloat("_Cull", 0.0f);    // both sides
@@ -169,6 +169,36 @@ namespace TheOneFramework.EditorTools
             mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
             EditorUtility.SetDirty(mat);
             return mat;
+        }
+
+        // The Source ripple texture only has data in its green channel (Portal 2's shader tints it), so a
+        // colour tint would always stay green. Copies green into grey so _BaseColor decides the colour.
+        private static Texture2D GreyFromGreen(Texture2D source, string path)
+        {
+            var rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+            Graphics.Blit(source, rt);
+            var previous = RenderTexture.active;
+            RenderTexture.active = rt;
+            var copy = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false, true);
+            copy.ReadPixels(new Rect(0, 0, source.width, source.height), 0, 0);
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(rt);
+
+            Color[] pixels = copy.GetPixels();
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                float g = pixels[i].g;
+                pixels[i] = new Color(g, g, g, 1.0f);
+            }
+            copy.SetPixels(pixels);
+            File.WriteAllBytes(path, copy.EncodeToPNG());
+            Object.DestroyImmediate(copy);
+
+            AssetDatabase.ImportAsset(path);
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            importer.wrapMode = TextureWrapMode.Repeat;
+            importer.SaveAndReimport();
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
 
         // Root sits on the wall surface, facing out (+Z). Retracted the panel is flush in the wall;

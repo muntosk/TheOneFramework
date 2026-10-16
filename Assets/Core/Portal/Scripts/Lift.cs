@@ -70,6 +70,9 @@ namespace Core.Portal.Scripts
                 _target = transform.localPosition;                 // placed position = where it ends up
                 transform.localPosition -= Vector3.up * height;    // start below
                 _triggered = true;                                 // starts by itself
+                // Move the platform's colliders down now too, or the arriving player is put on a floor
+                // that physics still thinks is up top and drops down the shaft.
+                Physics.SyncTransforms();
             }
         }
 
@@ -91,6 +94,13 @@ namespace Core.Portal.Scripts
 
         private void Update()
         {
+            // The shaft goes below the fall threshold (and can pass a KillZone): protect the rider for the
+            // whole trip, also while an exit lift waits at the end for the next level to show.
+            if (_triggered && (!_arrived || (liftMode == LiftMode.Exit && _hasNextLevel)))
+            {
+                MarkRiderCarried();
+            }
+
             if (!_triggered || _arrived)
             {
                 return;
@@ -127,14 +137,18 @@ namespace Core.Portal.Scripts
 
             Vector3 before = transform.position;
             transform.localPosition = Vector3.MoveTowards(transform.localPosition, _target, speed * Time.deltaTime);
+            // The platform's colliders follow at once, so the rider's gravity this frame lands on the
+            // floor where it is now rather than where it was last physics step.
+            Physics.SyncTransforms();
             if (_rider != null)
             {
-                // World-space delta, since CharacterController.Move works in world space.
-                _rider.Move(transform.position - before);
-
-                // A lift shaft can pass through a KillZone (e.g. water above the arrival room).
-                RespawnBehaviour respawn = _rider.GetComponentInParent<RespawnBehaviour>();
-                if (respawn != null) respawn.MarkCarried();
+                // Shift the rider by exactly the platform's delta. CharacterController.Move refuses to
+                // move when it starts a hair inside the floor, which happens with big frame steps (e.g.
+                // right after a scene load) - the lift would then leave the player behind in the shaft.
+                bool wasEnabled = _rider.enabled;
+                _rider.enabled = false;
+                _rider.transform.position += transform.position - before;
+                _rider.enabled = wasEnabled;
             }
 
             // Fade out so it's black exactly when the lift reaches the top.
@@ -220,8 +234,21 @@ namespace Core.Portal.Scripts
             Raise();
         }
 
+        private void MarkRiderCarried()
+        {
+            if (_rider == null) return;
+            RespawnBehaviour respawn = _rider.GetComponentInParent<RespawnBehaviour>();
+            if (respawn != null) respawn.MarkCarried();
+        }
+
         private void OnTriggerExit(Collider other)
         {
+            // Once it moves the door is shut: a trigger blip mid-ride must not drop the rider (and its protection).
+            if (_moving || (_arrived && liftMode == LiftMode.Exit))
+            {
+                return;
+            }
+
             if (_rider != null && other.GetComponentInParent<CharacterController>() == _rider)
             {
                 _rider = null;
@@ -321,6 +348,9 @@ namespace Core.Portal.Scripts
 
             // Don't wait for OnTriggerEnter - it may only fire after the lift has already started moving.
             _rider = player;
+
+            // The player now stands below the fall threshold; RespawnBehaviour's Update may run before ours.
+            MarkRiderCarried();
 
             // The previous level's lift faded to black; fade back in while this one rises.
             _arrivedByLift = true;

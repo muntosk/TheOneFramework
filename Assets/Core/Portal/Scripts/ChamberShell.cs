@@ -36,6 +36,16 @@ namespace TheOneFramework.Portals
         [Tooltip("Height of the exit floor above the chamber floor, e.g. 2 for an exit on a ledge.")]
         public float exitHeight = 0.0f;
 
+        [Header("Window opening in the right wall (fill it with a Glass panel yourself)")]
+        [Tooltip("Width of the opening in panels. 0 = no window.")]
+        [Min(0.0f)] public float windowWidth = 0.0f;
+        [Tooltip("Middle of the opening, in panels from the front wall.")]
+        public float windowZ = 2.0f;
+        [Tooltip("Bottom edge of the opening (m above the floor).")]
+        [Min(0.0f)] public float windowSill = 1.0f;
+        [Tooltip("Height of the opening (m).")]
+        [Min(0.1f)] public float windowHeight = 2.5f;
+
         [Header("Dressing")]
         [Tooltip("Glowing light strips in the ceiling, each with a lamp - the room lights itself.")]
         public bool ceilingLights = true;
@@ -90,7 +100,19 @@ namespace TheOneFramework.Portals
             if (buildFloor) Box(floorPrefab, shell, "Floor", new Vector3(-w / 2, -t, 0), new Vector3(w / 2, 0, l));
             Box(ceilingPrefab, shell, "Ceiling", new Vector3(-w / 2 - t, h, -t), new Vector3(w / 2 + t, h + t, l + t));
             Box(wallPrefab, shell, "Wall_Left", new Vector3(-w / 2 - t, bottom - t, -t), new Vector3(-w / 2, h + t, l + t));
-            Box(wallPrefab, shell, "Wall_Right", new Vector3(w / 2, bottom - t, -t), new Vector3(w / 2 + t, h + t, l + t));
+            if (windowWidth > 0.0f)
+            {
+                float z0 = (windowZ - windowWidth / 2) * Panel, z1 = (windowZ + windowWidth / 2) * Panel;
+                float y0 = windowSill, y1 = Mathf.Min(windowSill + windowHeight, h);
+                Box(wallPrefab, shell, "Wall_Right_Front", new Vector3(w / 2, bottom - t, -t), new Vector3(w / 2 + t, h + t, z0));
+                Box(wallPrefab, shell, "Wall_Right_Back", new Vector3(w / 2, bottom - t, z1), new Vector3(w / 2 + t, h + t, l + t));
+                Box(wallPrefab, shell, "Wall_Right_Below", new Vector3(w / 2, bottom - t, z0), new Vector3(w / 2 + t, y0, z1));
+                Box(wallPrefab, shell, "Wall_Right_Above", new Vector3(w / 2, y1, z0), new Vector3(w / 2 + t, h + t, z1));
+            }
+            else
+            {
+                Box(wallPrefab, shell, "Wall_Right", new Vector3(w / 2, bottom - t, -t), new Vector3(w / 2 + t, h + t, l + t));
+            }
             WallWithOpening(shell, "Wall_Front", -w / 2, w / 2, bottom - t, h, -t, 0, ex, 0);
             WallWithOpening(shell, "Wall_Back", -w / 2, w / 2, bottom - t, h, l, l + t, xx, xy);
 

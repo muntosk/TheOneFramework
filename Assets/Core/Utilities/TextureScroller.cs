@@ -28,6 +28,9 @@ namespace TheOneFramework.Utilities
 
         private void Update()
         {
+            // Added at runtime or Awake skipped (e.g. inactive at load): set up lazily.
+            if (block == null) Awake();
+
             Vector2 offset = speed * Time.time;
             target.GetPropertyBlock(block);
             block.SetVector(stProperty, new Vector4(tiling.x, tiling.y, offset.x % 1.0f, offset.y % 1.0f));

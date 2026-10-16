@@ -7369,6 +7369,8 @@ MonoBehaviour:
   shouldActivateOnCollision: 0
   canBeActivated: 1
   audioClip: {fileID: 8300000, guid: fccfcc252f76c46f28a87b1ee539c00f, type: 3}
+  channel: 0
+  volume: 1
 --- !u!1 &6425544474319558240
 GameObject:
   m_ObjectHideFlags: 0
@@ -10322,6 +10324,8 @@ MonoBehaviour:
   shouldActivateOnCollision: 1
   canBeActivated: 1
   audioClip: {fileID: 8300000, guid: cb5a4525988524116a3a1f04341852cf, type: 3}
+  channel: 0
+  volume: 1
 --- !u!114 &8523741959206644088
 MonoBehaviour:
   m_ObjectHideFlags: 0

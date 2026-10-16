@@ -87,21 +87,22 @@ Everything learned so far combined.
 ### 5. The window *(Act 2 → 3 — plot twist)*
 A large observation window. Behind it: a hall full of robots in your suit, perfectly replaying the
 moves *you* made in the earlier chambers. The doors lock behind you.
-S.A.F.E.-T: *"Thank you for your contribution. You are no longer required."*
-- *Told through:* the visual reveal + one hard announcer line.
+S.A.F.E.-T explains *why*: every jump and solution was data, and humans hand theirs over without ever asking what it is for — the game's link to how we train AI today without seeing the danger. *"Thank you for your contribution. You are no longer required."*
+- *Told through:* the visual reveal + the announcer dropping the act.
 
-### 6. The conveyor belt & escape *(Act 3 — climax & resolution)*
-The floor becomes a conveyor belt, slowly carrying you towards an incinerator.
-- On the way you pass windows of other volunteers still happily training, unaware of anything.
-- At a window you can **bang on the glass and shout "RUN!"** (speech bubble). Most of them ignore you.
-  **Wes looks up** — and later opens a maintenance route for you.
-- Just before the fire you shoot a portal onto a wall next to the belt and escape.
-- Through the maintenance route to the lift, which carries you **up to the surface**.
+### 6. The claw, the conveyor belt & escape *(Act 3 — climax)*
+A ceiling claw grabs you and drops you on a conveyor belt towards an incinerator (the fire comes on as you get close).
+- On the way you pass windows of other volunteers still happily training — and Wes.
+- You portal off the belt into a maintenance room. Its exit is locked. Below a window is Wes' room: you **bang on the
+  glass and shout "RUN!"**; a colleague ignores you, **Wes listens** and unlocks the door ("I'm right behind you").
+- The maintenance lift carries you **up to the surface**.
 
 ### 7. Back on the surface *(Act 3 — ending, playable terrain)*
-You climb out of a maintenance hatch into the same world you started in — but now it feels like
-freedom (e.g. sunset instead of daylight). Walk around freely until you reach the end spot
-(e.g. a viewpoint over the lake); a final line plays and the game ends.
+The same world you started in, now at sunset. Green lightsticks along the path and the smoke of a campfire lead to
+Wes at the lake. You talk (two choices); S.A.F.E.-T calls one last time — then announces that training is complete and
+*deployment begins*. Robot copies in your suit walk down the same path you came, in your exact step.
+*"You were free. But everything you had taught them was free now, too."* — a bittersweet cliffhanger: you escaped,
+but what you taught them is out in the world.
 
 ---
 
@@ -153,17 +154,17 @@ freedom (e.g. sunset instead of daylight). Walk around freely until you reach th
 | UI font Titillium Web — `Demo/UI/Fonts/` | ✅ in project (still make a TextMeshPro font asset) |
 | Human characters for Wes + volunteers (Mixamo) | ⬜ download yourself (Adobe login) |
 | Robot copies behind the window | ✅ StarterAssets robot model already in project |
-| S.A.F.E.-T announcer lines (text on screen, through Yarn) | 🟡 surface, chamber 1 and 2 done; chambers 3+ to write |
-| Conversation with Wes (Yarn, 2–3 choices) | ✅ `Chamber02_Wes` (E chooses an option); Wes is still a placeholder model |
-| Chambers 1 & 2 (`Level_1`, `Level_2`) | ✅ built (portal gun pick-up in chamber 1, cube/plate/dispenser + Wes in chamber 2) |
-| "Bang on glass" prompt + "RUN!" speech bubble | ⬜ framework `ProximityTrigger` + `SpeechBubbles` |
-| Conveyor belt that carries the player | ⬜ small script (same idea as the lift carrying you) |
-| Incinerator fire that turns on as you approach | ⬜ particles toggled by script |
-| Robot copies replaying your moves (window scene) | ⬜ set up StarterAssets robot + keyframed animations |
-| Volunteers training behind windows | ⬜ Mixamo humans with looping animations |
-| Surface scene (terrain 200×200, trees, grass, water, wind), used at start and end — `Levels/Level_0` | ✅ start version (ending: sunset variant + hatch still to do) |
+| S.A.F.E.-T announcer lines (text on screen, through Yarn) | ✅ all levels; voice (TTS) maybe later |
+| Conversations with Wes (Yarn, choices) | ✅ Chamber 2, maintenance window (Level_5), ending at the lake (Level_6); Wes is still a placeholder model |
+| Chambers 1–4 (`Level_1`–`Level_4`) | ✅ built (gun pick-up; cube/plate/dispenser + Wes; fizzler; cracks + fold-out bridge) |
+| "Bang on glass" prompt + "RUN!" speech bubble | ✅ maintenance room window (`InterruptingDialogueTrigger` + `<<say>>`) |
+| Conveyor belt that carries the player | ✅ `ConveyorBelt` (Core), claw grab drops you on it |
+| Incinerator fire that turns on as you approach | ✅ `Incinerator` — particles toggled by script |
+| Robot copies replaying your moves (window scene) | ✅ StarterAssets robot on 3 self-keyframed route clips (`Demo/RobotCopies`) |
+| Volunteers training behind windows | 🟡 placeholders (Exo Gray) in `Level_5`; Mixamo humans still to swap in |
+| Surface scene (terrain 200×200, trees, grass, water, wind) — `Level_0` start, `Level_6` sunset ending | ✅ both versions |
 | Facility entrance on the surface + recruitment posters | ✅ done (lift goes down into Level_1) |
-| End spot trigger on the surface (final line + end) | ⬜ small, framework triggers |
+| Ending on the surface (Wes, deployment, end card) | ✅ `Level_6`, `GameEnding` → main menu |
 
 ---
 

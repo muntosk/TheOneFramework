@@ -19,6 +19,13 @@ namespace TheOneFramework.Portals
         [SerializeField]
         private bool spawnOnStart = true;
 
+        [Tooltip("Drop a new cube by itself when the current one is gone (fizzled, fell in goo, ...).")]
+        [SerializeField]
+        private bool respawnWhenLost = true;
+
+        [SerializeField, Min(0.0f)]
+        private float respawnDelay = 1.5f;
+
         [Tooltip("Played at the spawn point every time a cube drops. Leave empty for silence.")]
         [SerializeField]
         private AudioClip dispenseClip;
@@ -27,10 +34,28 @@ namespace TheOneFramework.Portals
         private float volume = 0.8f;
 
         private GameObject currentCube;
+        private bool hasSpawned;
+        private float lostTimer;
 
         private void Start()
         {
             if (spawnOnStart)
+            {
+                SpawnCube();
+            }
+        }
+
+        private void Update()
+        {
+            // Destroyed objects compare equal to null, so this notices a fizzled cube.
+            if (!respawnWhenLost || !hasSpawned || currentCube != null)
+            {
+                lostTimer = 0.0f;
+                return;
+            }
+
+            lostTimer += Time.deltaTime;
+            if (lostTimer >= respawnDelay)
             {
                 SpawnCube();
             }
@@ -52,6 +77,7 @@ namespace TheOneFramework.Portals
 
             Transform origin = spawnPoint != null ? spawnPoint : transform;
             currentCube = Instantiate(cubePrefab, origin.position, origin.rotation);
+            hasSpawned = true;
             if (dispenseClip != null)
             {
                 GameAudio.PlayAt(dispenseClip, origin.position, volume);

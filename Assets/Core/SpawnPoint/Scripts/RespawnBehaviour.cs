@@ -41,9 +41,11 @@ public class RespawnBehaviour : MonoBehaviour
     public bool IsDying => dying;
 
     // Set every frame something carries the player (a moving lift); KillZones leave them alone then.
+    // Counted in frames too: right after a scene loads one frame can take longer than the time window.
     private float carriedUntil;
-    public bool IsCarried => Time.time < carriedUntil;
-    public void MarkCarried() { carriedUntil = Time.time + 0.25f; }
+    private int carriedFrame = -10;
+    public bool IsCarried => Time.time < carriedUntil || Time.frameCount <= carriedFrame + 1;
+    public void MarkCarried() { carriedUntil = Time.time + 0.25f; carriedFrame = Time.frameCount; }
 
     void Start()
     {

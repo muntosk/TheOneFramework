@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 using TheOneFramework.Audio;
 
 namespace TheOneFramework.Portals
@@ -16,6 +17,9 @@ namespace TheOneFramework.Portals
         [Tooltip("Played where a cube gets fizzled.")]
         [SerializeField] private AudioClip objectFizzleClip;
         [SerializeField, Range(0.0f, 1.0f)] private float volume = 0.8f;
+
+        [Tooltip("Fires whenever the field erases a cube (carried or thrown), e.g. for an announcer line.")]
+        public UnityEvent onObjectFizzled;
 
         private void Awake()
         {
@@ -57,14 +61,16 @@ namespace TheOneFramework.Portals
                     portal.RemovePortal();
                 }
                 var playerCarriedObject = other.GetComponent<PlayerCarry>();
-                playerCarriedObject.DestroyHeld();
-
-                // Just remove all Carriables
-                GameObject[] targets = GameObject.FindGameObjectsWithTag("Fizzler");
-
-                foreach (GameObject target in targets)
+                bool erased = playerCarriedObject != null && playerCarriedObject.IsCarrying;
+                if (playerCarriedObject != null)
                 {
-                    Destroy(target);
+                    playerCarriedObject.DestroyHeld();
+                }
+
+                // Like Portal's Emancipation Grill only what you carry goes, not every cube in the level.
+                if (erased)
+                {
+                    onObjectFizzled.Invoke();
                 }
             }
 
@@ -77,6 +83,7 @@ namespace TheOneFramework.Portals
                     GameAudio.PlayAt(objectFizzleClip, carryable.transform.position, volume);
                 }
                 Destroy(carryable.gameObject);
+                onObjectFizzled.Invoke();
             }
 
 

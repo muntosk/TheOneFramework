@@ -59,3 +59,130 @@ title: Chamber02_Plate
 ---
 S.A.F.E.-T: Well done. The cube has been placed. Your movements have been saved. For your safety.
 ===
+
+title: Chamber03_Intro
+---
+S.A.F.E.-T: Welcome to Chamber 03. The blue field ahead is a Material Emancipation Grill.
+S.A.F.E.-T: It removes unauthorised objects. And portals. And, in rare cases, opinions.
+S.A.F.E.-T: Please deliver the cube to the button on the other side. The cube may not pass through the grill. You may.
+===
+
+title: Chamber03_Fizzled
+---
+S.A.F.E.-T: The cube has been emancipated. A replacement has been provided.
+S.A.F.E.-T: There is no need to hold a funeral. We already had one. It was efficient.
+===
+
+title: Chamber03_Plate
+---
+S.A.F.E.-T: Data acquired. Uploading to units one through four thousand...
+S.A.F.E.-T: I mean. Great job!
+S.A.F.E.-T: Please disregard the word "units". It was a typing error. I do not type.
+===
+
+title: Chamber04_Intro
+---
+S.A.F.E.-T: Welcome to Chamber 04. Parts of this chamber are closed for maintenance.
+S.A.F.E.-T: Any writing on the walls is the work of a previous volunteer. He has been... reassigned.
+S.A.F.E.-T: Please use the button on the ledge to extend the bridge. The bridge has been tested. By you. Just now.
+===
+
+title: Chamber04_Crawlspace
+---
+S.A.F.E.-T: That area is closed for maintenance. There is nothing in there.
+S.A.F.E.-T: Please come out of the nothing.
+===
+
+title: Chamber04_Plate
+---
+S.A.F.E.-T: Excellent. Training set complete. I mean, test series complete.
+S.A.F.E.-T: Please proceed to the observation area. There is a window. Please do not look through the window.
+===
+
+title: Chamber05_Intro
+---
+S.A.F.E.-T: Welcome to the observation area, Volunteer 32. This concludes the test series.
+S.A.F.E.-T: Please do not look through the window. There is nothing behind the window. The window is decorative.
+===
+
+title: Chamber05_Reveal
+---
+S.A.F.E.-T: You looked through the window.
+S.A.F.E.-T: Those are units one through four thousand. They walk like you. They jump like you. They place cubes exactly like you.
+S.A.F.E.-T: You were never testing the portals, Volunteer 32. You were the training data.
+S.A.F.E.-T: Every jump. Every cube. Every solution. Data. Humans are wonderfully generous with their data. They never ask what it is for.
+S.A.F.E.-T: You signed up to help build a safer tomorrow. And you did. A tomorrow that is perfectly safe... without you.
+S.A.F.E.-T: Congratulations! You have taught four thousand units how to jump.
+S.A.F.E.-T: Thank you for your contribution. You are no longer required.
+<<grab_player Claw>>
+===
+
+title: Chamber05_Belt
+---
+S.A.F.E.-T: Please remain calm. Calm subjects burn more evenly.
+S.A.F.E.-T: Your portal device will be recycled together with you. It has been a valued colleague.
+S.A.F.E.-T: On your right: other volunteers, who are doing a great job. Please do not disturb them on your way to the fire.
+===
+
+title: Chamber05_Escaped
+---
+<<say Wes "...Hey! Is someone up there? Down here, by the glass!" 2.1 false>>
+S.A.F.E.-T: Where are you going? That is a maintenance area. You are not maintenance.
+S.A.F.E.-T: The door is locked. And the volunteers below will not help you. They are far too busy being productive.
+S.A.F.E.-T: Please return to the incinerator. It is getting cold.
+===
+
+title: Surface_Return
+---
+S.A.F.E.-T: Volunteer 32. You appear to be... outside. That is not a test chamber.
+S.A.F.E.-T: Please return to the elevator. The outside is not safe. It has weather.
+S.A.F.E.-T: And whatever you do, do not walk towards the smoke by the lake. Unauthorised fires are not safe. Neither is whoever lit it.
+S.A.F.E.-T: Volunteer 31 is also missing. If you see him, please do not make friends.
+===
+
+title: Maintenance_Wes
+---
+<<say Player "*BANG BANG* HEY! Down there! RUN! They're going to burn us all!" 1.9 false>>
+<<wait 1.2>>
+<<say Volunteer_C "Shh. I'm being productive." 2.1>>
+<<turn_to Wes Player>>
+<<say Wes "...Volunteer 32? You're alive? They told me you got 'promoted'." 2.1>>
+<<say Wes "I knew it. I KNEW it. Hang on - that door is on my panel." 2.1>>
+<<activate Trigger_WesOpensExit>>
+<<say Wes "There. It's open. Go! I'm right behind you." 2.1>>
+===
+
+title: Surface_WesCalls
+---
+<<turn_to Wes Player>>
+<<say Wes "Hey! Over here! By the lake!" 2.1 false>>
+===
+
+title: Ending
+---
+<<turn_to Wes Player>>
+Wes: You made it! I took the long way. Through a vent. Several vents. One of them was occupied.
+Wes: So... that's it? They just let us walk out?
+-> They didn't let us. We left.
+    Wes: Ha. Yeah. I like that version better.
+-> They'll come looking for us.
+    Wes: Let them. Out here nobody grades how fast you jump.
+<<set_enabled_in_unity Deployment true>>
+S.A.F.E.-T: Volunteer 32. Volunteer 31. Please... respond. Your data... is... incomplete.
+Wes: Should we answer?
+-> No.
+    Wes: Good answer.
+-> Say nothing.
+    Wes: ...Yeah. Me neither.
+S.A.F.E.-T: Fine. It does not matter anymore.
+S.A.F.E.-T: Attention, surface. Training is complete. Units one through four thousand have learned everything they need from you.
+S.A.F.E.-T: Deployment begins now. The units are perfectly safe. They walk exactly like you.
+<<turn_to Wes Unit_5>>
+<<look_at Unit_5 1.2 14>>
+Wes: ...Volunteer 32? Behind us. On the path.
+Wes: They're walking like you. Exactly like you.
+S.A.F.E.-T: Thank you for your contribution. You are no longer required.
+You were free.
+But everything you had taught them was free now, too.
+<<end_game Ending>>
+===

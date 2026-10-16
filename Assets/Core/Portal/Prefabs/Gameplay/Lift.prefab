@@ -56,6 +56,7 @@ MonoBehaviour:
   travelLoopClip: {fileID: 8300000, guid: eabd245765b8e996a9e8ffb4c1bfc669, type: 3}
   stopClip: {fileID: 8300000, guid: 0565dbd588015bc7c98961c09108b80a, type: 3}
   volume: 0.8
+  fadeDuration: 1
 --- !u!114 &9026058820684876211
 MonoBehaviour:
   m_ObjectHideFlags: 0

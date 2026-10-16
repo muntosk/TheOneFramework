@@ -78,6 +78,9 @@ namespace Core.Portal.Scripts
                 transform.SetParent(null);
                 DontDestroyOnLoad(gameObject);
                 currentLevelNumber = LevelNumberOf(SceneManager.GetActiveScene().name, startLevelIndex);
+                // This survives scene loads (e.g. back to the menu and Start again), so follow whichever
+                // level gets loaded rather than only the one we started in.
+                SceneManager.sceneLoaded += (scene, mode) => currentLevelNumber = LevelNumberOf(scene.name, currentLevelNumber);
             }
             else
             {
