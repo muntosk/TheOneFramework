@@ -24,7 +24,7 @@ S.A.F.E.-T: Excellent work. Your performance has been recorded for... quality pu
 
 title: Surface_Elevator
 ---
-S.A.F.E.-T: Welcome to the Safe Future Program, volunteer. Please step into the elevator.
+S.A.F.E.-T: Welcome to the Safe Future Program, volunteer. Please keep your arms inside the elevator.
 S.A.F.E.-T: By entering this elevator, you have agreed to help. You definitely signed the waiver.
 S.A.F.E.-T: Please do not ask to see the waiver.
 ===
@@ -97,6 +97,19 @@ title: Chamber04_Plate
 ---
 S.A.F.E.-T: Excellent. Training set complete. I mean, test series complete.
 S.A.F.E.-T: Please proceed to the observation area. There is a window. Please do not look through the window.
+===
+
+title: Momentum_Intro
+---
+S.A.F.E.-T: Chamber five. The units have been learning faster than expected. To keep up, the tests will now be harder.
+S.A.F.E.-T: Momentum is conserved through portals. A falling volunteer becomes a flying volunteer.
+S.A.F.E.-T: The units learn faster when you struggle. Please struggle more efficiently.
+===
+
+title: Momentum_Plate
+---
+S.A.F.E.-T: Excellent. Unit performance in this chamber has improved by forty percent.
+S.A.F.E.-T: Your performance has not been measured. It no longer needs to be.
 ===
 
 title: Chamber05_Intro

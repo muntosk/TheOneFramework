@@ -7,8 +7,8 @@ What was discussed and decided along the way: `Doc/Sessions/2026-10-16_laptop.md
 ## Level order (scene names matter)
 `LevelManager` loads the next level by name: `Level_` + (current number + 1). The whole game is playable end to end:
 - `MainMenu` → `Level_0` (surface, lift down) → `Level_1` (Chamber 1 "Welcome", portal gun) → `Level_2` (Chamber 2
-  "The neighbour", cube + Wes) → `Level_3` (Chamber 3, fizzler) → `Level_4` (Chamber 4, cracks + fold-out bridge) →
-  `Level_5` (the window, claw, conveyor, escape) → `Level_6` (surface at sunset, ending) → end card → `MainMenu`.
+  "The neighbour", cube + Wes) → `Level_3` (Chamber 3, fizzler) → `Level_4` (Chamber 4, cracks + fold-out bridge) → `Level_5` (Chamber 5 "Momentum", flinging) →
+  `Level_6` (the window, claw, conveyor, escape) → `Level_7` (surface at sunset, ending) → end card → `MainMenu`.
 - `001_portal_test_level1` is still in the build list (old test scene, harmless — remove when convenient).
 
 ## Current state (what's new this session)
@@ -19,7 +19,7 @@ field), carry the cube round it. Lines `Chamber03_*` (intro, cube erased, plate 
 bridge (`Platform_FromWall`, made black/non-portalable). Second white panel hidden in a crawlspace behind a broken
 false wall (`Crawlspace/`, Rat Man graffiti, `BrokenEdges`, BTS concrete `Lining`, orange lamp). Exit fizzler.
 
-**`Level_5` — the window and the escape**
+**`Level_6` — the window and the escape**
 - Observation room (`ChamberShell` with the new right-wall window opening) over a hall of robot copies
   (`Hall/RobotCopies`: patrols + hurdlers on self-keyframed route clips, 33 waiting units facing the window).
   `Sequence/Trigger_Reveal` locks the entrance, cross-fades `LevelMusic` to `Reveal_Tension`, starts
@@ -32,7 +32,7 @@ false wall (`Crawlspace/`, Rat Man graffiti, `BrokenEdges`, BTS concrete `Lining
   (`Maintenance/Window_Wes`, `Maintenance_Wes`), he turns and unlocks `Trigger_WesOpensExit`.
 - Training rooms seen from the belt (`Disposal/TrainingRooms`): Volunteer_A/B/C and **Wes = Exo Gray placeholders**.
 
-**`Level_6` — ending at sunset**
+**`Level_7` — ending at sunset**
 - Copy of Level_0: `Skybox_Sunset`, warm fog, low sun, no music (nature ambience only). The entrance lift
   (`Lift_Up`) brings you *up*.
 - Guidance: green lightsticks along the existing path (`Gameplay/Ending/Lightsticks`), Wes' campfire with a smoke
@@ -53,9 +53,9 @@ false wall (`Crawlspace/`, Rat Man graffiti, `BrokenEdges`, BTS concrete `Lining
   purpose (a waiting command of an interrupted conversation would skip a line of the next one).
 
 ## Still to do (next steps)
-- **Play the whole game once yourself** (especially Level_5 → 6) and run **playtest 1** (≥ 4 people, document it).
+- **Play the whole game once yourself** (especially Level_6 → 7) and run **playtest 1** (≥ 4 people, document it).
 - Mixamo **Wes** + volunteers: replace the `Body` child of the `Wes`/`Volunteer_*` objects (Level_2 `Wes_Placeholder`,
-  Level_5 `Disposal/TrainingRooms`, Level_6 `Gameplay/Ending/Wes`). Keep the object names — Yarn finds them by name.
+  Level_6 `Disposal/TrainingRooms`, Level_7 `Gameplay/Ending/Wes`). Keep the object names — Yarn finds them by name.
 - Open the self-keyframed clips in the Animation window and tweak a few keys yourself (rubric: ≥ 2 self-keyframed).
 - Sculpt/paint the surface terrain **by hand** (rubric; screenshots as proof) — e.g. flatten the campfire spot.
 - Music in Chambers 1–4 (`LevelMusic` with `Chambers_Calm_01/02`) and maybe `Escape.ogg` on the belt.

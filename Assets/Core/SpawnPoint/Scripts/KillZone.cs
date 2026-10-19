@@ -2,14 +2,15 @@ using TheOneFramework.Audio;
 using TheOneFramework.Portals;
 using UnityEngine;
 
-// Put on deadly water/goo (or any object): the player who falls in fades out and respawns on the
-// last solid ground they stood on (or the spawn point), cubes go back to where they started.
+// Put on deadly water/goo (or any object): the player who falls in fades out and respawns at the
+// spawn point / last checkpoint (or, with respawnAtSafeGround, the last solid ground they stood on);
+// cubes go back to where they started.
 // Uses the object's trigger collider; without one (e.g. a water plane) it makes its own from the
 // mesh, `depth` deep, and turns the solid collider off so you sink in instead of walking on it.
 public class KillZone : MonoBehaviour
 {
-    [Tooltip("Respawn on the last solid ground the player stood on. Off: at the spawn point.")]
-    public bool respawnAtSafeGround = true;
+    [Tooltip("Respawn on the last solid ground the player stood on. Off (default): at the spawn point / last checkpoint.")]
+    public bool respawnAtSafeGround = false;
 
     [Tooltip("Turn off the object's own solid colliders so the player sinks in instead of standing on it.")]
     public bool letThrough = true;
@@ -77,8 +78,18 @@ public class KillZone : MonoBehaviour
     // The player dies once they've fallen in and sunk sinkBeforeDeath below the surface.
     private void OnTriggerStay(Collider other)
     {
+        if (heldInside.Count > 0)
+        {
+            var carryable = other.GetComponentInParent<Carryable>();
+            if (carryable != null && heldInside.Contains(carryable) && !IsHeld(carryable))
+            {
+                ReturnCube(carryable);
+                return;
+            }
+        }
+
         var player = other.GetComponentInParent<RespawnBehaviour>();
-        if (player == null || player.IsDying || player.IsCarried || !fellIn.Contains(player)) return;
+        if (player == null || player.IsDying || player.IsCarried || player.IsPassingThroughPortal || !fellIn.Contains(player)) return;
 
         if (player.transform.position.y > Surface - sinkBeforeDeath) return;
 
@@ -96,24 +107,45 @@ public class KillZone : MonoBehaviour
         if (player != null)
         {
             // Feet at (or just under, when falling fast) the surface: they're coming in from above.
-            if (player.transform.position.y >= Surface - 0.5f) fellIn.Add(player);
+            // Not when that's just the far side of a floor portal they're dropping through.
+            if (player.transform.position.y >= Surface - 0.5f && !player.IsPassingThroughPortal) fellIn.Add(player);
             return;
         }
 
         var carryable = other.GetComponentInParent<Carryable>();
         if (carryable != null && carryable.transform.position.y >= Surface - 0.5f)
         {
-            if (objectClip != null)
-            {
-                GameAudio.PlayAt(objectClip, carryable.transform.position, volume);
-            }
-            carryable.ReturnToOrigin();
+            // Dipped in while the player holds it (carrying it along the edge): leave it be. Only
+            // once it's let go of in here does it count as fallen in.
+            if (IsHeld(carryable)) heldInside.Add(carryable);
+            else ReturnCube(carryable);
         }
+    }
+
+    private readonly System.Collections.Generic.HashSet<Carryable> heldInside = new System.Collections.Generic.HashSet<Carryable>();
+
+    private static bool IsHeld(Carryable carryable)
+    {
+        var carrier = FindAnyObjectByType<PlayerCarry>();
+        return carrier != null && carrier.IsHolding(carryable);
+    }
+
+    private void ReturnCube(Carryable carryable)
+    {
+        heldInside.Remove(carryable);
+        if (objectClip != null)
+        {
+            GameAudio.PlayAt(objectClip, carryable.transform.position, volume);
+        }
+        carryable.ReturnToOrigin();
     }
 
     private void OnTriggerExit(Collider other)
     {
         var player = other.GetComponentInParent<RespawnBehaviour>();
         if (player != null) fellIn.Remove(player);
+
+        var carryable = other.GetComponentInParent<Carryable>();
+        if (carryable != null) heldInside.Remove(carryable);
     }
 }

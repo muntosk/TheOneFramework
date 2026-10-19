@@ -82,7 +82,7 @@ namespace StarterAssets
 
         [Header("Portals")]
         [Tooltip("How quickly momentum gained from a portal fling bleeds off once grounded again")]
-        public float PortalVelocityDamping = 6.0f;
+        public float PortalVelocityDamping = 12.0f;
 
         // momentum carried in from a portal warp (e.g. flinging through a floor portal);
         // decays once grounded so normal input-driven movement takes back over
@@ -237,6 +237,10 @@ namespace StarterAssets
 
         public float LookYaw => _cinemachineTargetYaw;
         public float LookPitch => _cinemachineTargetPitch;
+
+        // The velocity this controller is trying to move at (input + portal momentum + gravity). Unlike
+        // CharacterController.velocity it isn't cut short when the last Move() bumped into something.
+        public Vector3 IntendedVelocity => _moveVelocity + _externalVelocity + new Vector3(0.0f, _verticalVelocity, 0.0f);
 
         // Points the free-look camera somewhere directly, e.g. after an arrival Lift places the player
         // in a new scene. Also writes the camera target itself, because Start reads the yaw back from
@@ -449,6 +453,16 @@ _moveVelocity = Vector3.MoveTowards(_moveVelocity, targetDirection * _speed, air
                 _animator.SetFloat(_animIDVelocityX, localVelocity.x);
                 _animator.SetFloat(_animIDVelocityZ, localVelocity.z);
             }
+        }
+
+        // Portal momentum doesn't keep pinning you to a wall you flew into: the part of it going into
+        // the wall is dropped at once, so you slide down and can move again straight away.
+        private void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            if (Mathf.Abs(hit.normal.y) > 0.7f) return;   // floor or ceiling
+            Vector3 normal = new Vector3(hit.normal.x, 0.0f, hit.normal.z).normalized;
+            float into = Vector3.Dot(_externalVelocity, normal);
+            if (into < 0.0f) _externalVelocity -= normal * into;
         }
 
         private void JumpAndGravity()

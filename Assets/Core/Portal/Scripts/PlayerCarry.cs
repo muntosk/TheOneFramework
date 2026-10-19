@@ -60,6 +60,7 @@ namespace TheOneFramework.Portals
         private bool wasHeldKinematic;
 
         public bool IsCarrying => held != null;
+        public bool IsHolding(Carryable carryable) => held != null && held == carryable;
 
         // Unity doesn't guarantee whether this Update() or PortalGun's runs first, so on the frame
         // LMB launches the held object, PortalGun could already see IsCarrying == false and fire a

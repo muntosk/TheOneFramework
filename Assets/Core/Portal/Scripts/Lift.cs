@@ -33,6 +33,12 @@ namespace Core.Portal.Scripts
         [SerializeField] private Door door;
         [Tooltip("Decide if the lift exits the level or enters the level.")]
         [SerializeField] private LiftMode liftMode = LiftMode.Exit;
+        [Tooltip("Let S.A.F.E.-T finish first: an exit lift won't leave while a conversation runs, an " +
+                 "arrival lift only opens once it's over.")]
+        [SerializeField] private bool waitForDialogue = true;
+        [Tooltip("Exit only: Yarn node that starts once the player is inside and the door has shut. The lift " +
+                 "leaves when it's over. Leave empty for none.")]
+        [SerializeField] private string departureDialogue = "";
 
         [Header("Audio")]
         [Tooltip("Played once when the lift starts moving. Leave empty for silence.")]
@@ -58,6 +64,31 @@ namespace Core.Portal.Scripts
         private bool _hasNextLevel;
         private bool _fadingOut;
         private bool _arrivedByLift;
+        private bool _openWhenQuiet;
+        private Yarn.Unity.DialogueRunner _dialogue;
+        private bool _searchedDialogue;
+        private bool _departureDialogueStarted;
+
+        private bool Talking
+        {
+            get
+            {
+                if (!waitForDialogue) return false;
+                if (!_searchedDialogue)
+                {
+                    _dialogue = FindAnyObjectByType<Yarn.Unity.DialogueRunner>();
+                    _searchedDialogue = true;
+                }
+                return _dialogue != null && _dialogue.IsDialogueRunning;
+            }
+        }
+
+        private void SetDoor(bool open)
+        {
+            if (door == null) return;
+            if (open) door.Open();
+            else door.Close();
+        }
 
         private void Awake()
         {
@@ -81,10 +112,7 @@ namespace Core.Portal.Scripts
             if (liftMode == LiftMode.Exit)
             {
                 // In Start rather than Awake, so Door has already stored its closed position in its own Awake.
-                if (door != null)
-                {
-                    door.Open();
-                }
+                SetDoor(true);
             }
             else
             {
@@ -99,6 +127,12 @@ namespace Core.Portal.Scripts
             if (_triggered && (!_arrived || (liftMode == LiftMode.Exit && _hasNextLevel)))
             {
                 MarkRiderCarried();
+            }
+
+            if (_openWhenQuiet && !Talking)
+            {
+                _openWhenQuiet = false;
+                SetDoor(true);
             }
 
             if (!_triggered || _arrived)
@@ -118,7 +152,8 @@ namespace Core.Portal.Scripts
                         return;
                     }
 
-                    _delayTimer += Time.deltaTime;
+                    // Doesn't leave in the middle of a line.
+                    if (!Talking) _delayTimer += Time.deltaTime;
                     return;
                 }
             }
@@ -177,9 +212,13 @@ namespace Core.Portal.Scripts
                 SaveRiderPose();
                 LevelManager.Instance.LoadNextLevel();
             }
-            else if (door != null)
+            else if (Talking)
             {
-                door.Open();
+                _openWhenQuiet = true;
+            }
+            else
+            {
+                SetDoor(true);
             }
         }
 
@@ -267,9 +306,17 @@ namespace Core.Portal.Scripts
 
             _triggered = true;
             _delayTimer = 0.0f;
-            if (door != null)
+            SetDoor(false);
+
+            if (liftMode == LiftMode.Exit && !_departureDialogueStarted && !string.IsNullOrEmpty(departureDialogue))
             {
-                door.Close();
+                _ = Talking;   // finds the DialogueRunner
+                if (_dialogue != null)
+                {
+                    _departureDialogueStarted = true;   // once: stepping out and in again doesn't replay it
+                    if (_dialogue.IsDialogueRunning) _dialogue.Stop();
+                    _dialogue.StartDialogue(departureDialogue);
+                }
             }
         }
 
@@ -277,10 +324,7 @@ namespace Core.Portal.Scripts
         {
             _triggered = false;
             _delayTimer = 0.0f;
-            if (door != null)
-            {
-                door.Open();
-            }
+            SetDoor(true);
         }
 
         // Everything relative to this lift, so the arrival lift can be anywhere in the next scene.

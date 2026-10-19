@@ -176,6 +176,18 @@ namespace TheOneFramework.Portals
             Box(wallPrefab, parent, name + "_R", new Vector3(hx1, y0, z0), new Vector3(x1, y1, z1));
             if (hy0 > y0) Box(wallPrefab, parent, name + "_Below", new Vector3(hx0, y0, z0), new Vector3(hx1, hy0, z1));
             if (hy1 < y1) Box(wallPrefab, parent, name + "_Above", new Vector3(hx0, hy1, z0), new Vector3(hx1, y1, z1));
+
+            // Closes the corners between the round door and the square hole.
+            var surround = new GameObject(name + "_DoorSurround", typeof(MeshFilter), typeof(MeshRenderer), typeof(DoorSurround));
+            surround.transform.SetParent(parent, false);
+            surround.transform.localPosition = new Vector3(holeX, hy0, (z0 + z1) / 2);
+            var fill = surround.GetComponent<DoorSurround>();
+            fill.width = OpeningWidth;
+            fill.height = OpeningHeight;
+            fill.depth = z1 - z0;
+            var wallRenderer = wallPrefab.GetComponent<Renderer>();
+            if (wallRenderer != null) surround.GetComponent<MeshRenderer>().sharedMaterials = wallRenderer.sharedMaterials;
+            fill.Rebuild();
         }
 
         private static void Box(GameObject prefab, Transform parent, string name, Vector3 min, Vector3 max)

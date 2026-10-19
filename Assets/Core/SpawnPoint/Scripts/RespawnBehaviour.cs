@@ -28,8 +28,8 @@ public class RespawnBehaviour : MonoBehaviour
 
     private bool skipInitialRespawn = false;
 
-    // Last spot the player stood on steadily (not a moving or physics object) - where a KillZone
-    // puts you back, so you don't have to redo the whole level.
+    // Last spot the player stood on steadily (not a moving or physics object) - where a KillZone with
+    // respawnAtSafeGround puts you back. By default dying sends you to the spawn point (checkpoint) instead.
     private bool hasSafeGround;
     private Vector3 safePosition;
     private Quaternion safeRotation;
@@ -46,6 +46,11 @@ public class RespawnBehaviour : MonoBehaviour
     private int carriedFrame = -10;
     public bool IsCarried => Time.time < carriedUntil || Time.frameCount <= carriedFrame + 1;
     public void MarkCarried() { carriedUntil = Time.time + 0.25f; carriedFrame = Time.frameCount; }
+
+    // Halfway through a portal (dropped into a floor portal over water at speed): briefly below the
+    // floor, where KillZones and the fall threshold must not count.
+    private TheOneFramework.Portals.PlayerPortalTraveller portalTraveller;
+    public bool IsPassingThroughPortal => (portalTraveller != null || TryGetComponent(out portalTraveller)) && portalTraveller.IsPassingThrough;
 
     void Start()
     {
@@ -78,9 +83,9 @@ public class RespawnBehaviour : MonoBehaviour
 
     void Update()
     {
-        if (transform.position.y < fallThreshold && !dying && !IsCarried)
+        if (transform.position.y < fallThreshold && !dying && !IsCarried && !IsPassingThroughPortal)
         {
-            Kill(true);
+            Kill(false);
         }
 
         TrackSafeGround();
@@ -144,6 +149,15 @@ public class RespawnBehaviour : MonoBehaviour
             Debug.LogWarning($"[Respawn] {name} died but has no spawn point or safe ground to go back to.");
         }
         groundedTime = 0.0f;
+
+        // Like reloading a checkpoint in Portal: the portals you had placed are gone...
+        foreach (var portal in Portal.ActivePortals.ToArray()) {
+            if (portal.IsPlaced) portal.RemovePortal();
+        }
+        // ...and every cube is back where it started (at its dispenser or its placed spot).
+        foreach (var cube in FindObjectsByType<Carryable>(FindObjectsSortMode.None)) {
+            cube.ReturnToOrigin();
+        }
 
         if (controller != null) controller.enabled = true;
         yield return new WaitForSecondsRealtime(deathBlackTime);

@@ -13,6 +13,7 @@ namespace StarterAssets
     // mouse look, so no separate first-person look logic is needed.
     [RequireComponent(typeof(Camera))]
     [RequireComponent(typeof(CinemachineBrain))]
+    [DefaultExecutionOrder(100)]   // after ThirdPersonControllerFixed has applied this frame's mouse look
     public class CameraModeToggle : MonoBehaviour
     {
         [SerializeField]
@@ -74,8 +75,13 @@ namespace StarterAssets
 
             // The Cinemachine Brain is disabled while in first person, so nothing else is
             // driving this transform - update it after Cinemachine's own LateUpdate would have run.
+            // Rotation comes straight from the mouse look, not from the camera target: that's a child
+            // of the body, which turns towards the look direction with smoothing, so copying it made
+            // the view wobble as the body caught up after a turn.
             Transform target = thirdPersonController.CinemachineCameraTarget.transform;
-            transform.SetPositionAndRotation(target.position, target.rotation);
+            Quaternion look = Quaternion.Euler(thirdPersonController.LookPitch + thirdPersonController.CameraAngleOverride,
+                thirdPersonController.LookYaw, 0.0f);
+            transform.SetPositionAndRotation(target.position, look);
         }
 
         public void Toggle()

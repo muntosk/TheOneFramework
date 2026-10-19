@@ -61,6 +61,16 @@ namespace TheOneFramework.Portals
             }
         }
 
+        // For a button that does other things too (a lift platform that also drops the cube): the
+        // first press dispenses, pressing again later doesn't swap out the cube you already have.
+        public void SpawnCubeIfNone()
+        {
+            if (currentCube == null)
+            {
+                SpawnCube();
+            }
+        }
+
         public void SpawnCube()
         {
             if (cubePrefab == null)

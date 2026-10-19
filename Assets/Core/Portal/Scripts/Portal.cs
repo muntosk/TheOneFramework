@@ -130,6 +130,18 @@ namespace TheOneFramework.Portals
             if (obj != null && portalObjects.Contains(obj))
             {
                 portalObjects.Remove(obj);
+
+                // Something fast (a cube dropped from high up) can enter and leave the trigger within
+                // the physics steps of a single frame, before Update gets to check it. If it left
+                // through the back, it went through: warp it now instead of letting it fall on.
+                float z = transform.InverseTransformPoint(obj.WarpCheckPoint).z;
+                float sinceLastWarp = Time.time - (lastWarpTime.TryGetValue(obj, out var t) ? t : -warpCooldown);
+                if (z > 0.0f && sinceLastWarp > warpCooldown && OtherPortal != null && OtherPortal.IsPlaced)
+                {
+                    lastWarpTime[obj] = Time.time;
+                    obj.Warp();
+                }
+
                 obj.ExitPortal(wallColliders);
             }
         }

@@ -9,6 +9,8 @@ the user's own Portal-style puzzle game. The user is Dutch — reply in Dutch.
   (what was asked and decided) are in `Doc/Sessions/`. Update both at the end of a session.
 - `Doc/Narrative.md` — the story ("You Are No Longer Required"), game flow, build list and planning.
 - `Assets/STRUCTURE.md` — where things go (per system, then per type, PascalCase folders).
+- `Doc/Overview.md` — every own script/asset and where it is used (+ cleanup candidates). Keep it updated when adding or removing things.
+- `Doc/Framework.md` — what came from the teachers' framework (unchanged / modified) vs. the user's own work vs. third-party.
 - `Doc/UF_self_assessment_*.xlsx` and `Doc/Design Fundamentals Assessment Template*.docx` — the rubrics.
   Every criterion must be at least Sufficient. Notable: terrain exactly 200×200 (UF min, DF max),
   ≥ 2 self-keyframed Animation clips, particles toggled by script, AudioMixer + settings UI,

@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a9a19584a2bf2b0aa4d39ea2a7b0a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillZone
-  respawnAtSafeGround: 1
+  respawnAtSafeGround: 0
   letThrough: 0
   depth: 3
   sinkBeforeDeath: 0.3

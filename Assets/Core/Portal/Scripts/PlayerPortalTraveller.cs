@@ -43,6 +43,9 @@ namespace TheOneFramework.Portals
         private Portal inPortal;
         private Portal outPortal;
         private Collider[] wallColliders;
+        private Collider[] preIgnoredWalls;
+        private Vector3 airVelocity;
+        private float lastAirTime = -10.0f;
 
         public Transform Transform => transform;
         public Vector3 WarpCheckPoint => transform.TransformPoint(controller.center);
@@ -74,6 +77,14 @@ namespace TheOneFramework.Portals
             }
         }
 
+        // Halfway through a portal: feet past its surface, inside its oval. Dropping into a floor portal
+        // at speed takes the body a metre or more below the floor before the warp; hazards under it
+        // (KillZone water, RespawnBehaviour's fall threshold) must not count that.
+        public bool IsPassingThrough =>
+            inPortal != null && inPortal.IsPlaced &&
+            inPortal.transform.InverseTransformPoint(transform.position).z > 0.0f &&
+            IsWithinPortalRect(inPortal, transform.position + Vector3.up * walkInHeight);
+
         // A wall is usually one single big collider, so Physics.IgnoreCollision can only turn its
         // collision fully on or off for the whole thing - there's no way to disable just the part
         // behind the portal. So instead of ignoring the wall for as long as you're anywhere inside
@@ -83,6 +94,7 @@ namespace TheOneFramework.Portals
         private void Update()
         {
             UpdateFunnel();
+            UpdateFloorPortalApproach();
 
             if (inPortal == null)
             {
@@ -128,6 +140,43 @@ namespace TheOneFramework.Portals
 
         // How far in front of / behind a portal's plane still counts as being in it.
         private const float maxPortalDepth = 1.0f;
+
+        // Falling fast, one frame's move can be a metre or more - enough to land on the floor under a
+        // floor portal before its trigger has even noticed you, which kills the fall speed (you'd then
+        // sink in slowly and come out the other side with no momentum). So when you're about to reach
+        // a floor portal from above, inside its oval, its floor stops being solid a frame early.
+        // Also remembers how fast you were going in the air, for Warp.
+        private void UpdateFloorPortalApproach()
+        {
+            if (preIgnoredWalls != null && !(inPortal != null && ReferenceEquals(preIgnoredWalls, wallColliders)))
+            {
+                Portal.IgnoreWalls(controller, preIgnoredWalls, false);
+            }
+            preIgnoredWalls = null;
+
+            if (controller.isGrounded) return;
+            Vector3 velocity = thirdPersonController.IntendedVelocity;
+            airVelocity = velocity;
+            lastAirTime = Time.time;
+            if (velocity.y > -minFunnelFallSpeed) return;
+
+            Vector3 feet = transform.position;
+            float reach = -velocity.y * Time.deltaTime * 3.0f + 0.5f;
+            foreach (var portal in Portal.ActivePortals)
+            {
+                if (portal.OtherPortal == null || !portal.OtherPortal.IsPlaced || !portal.IsPlaced) continue;
+                Transform t = portal.transform;
+                if (Vector3.Dot(-t.forward, Vector3.up) < floorCeilingThreshold) continue;
+
+                float height = feet.y - t.position.y;
+                if (height < -0.5f || height > reach) continue;
+                if (!IsWithinPortalRect(portal, new Vector3(feet.x, t.position.y, feet.z))) continue;
+
+                Portal.IgnoreWalls(controller, portal.WallColliders, true);
+                preIgnoredWalls = portal.WallColliders;
+                return;
+            }
+        }
 
         // Portal 2-style funneling: while falling, predict where you'll reach the height of each
         // placed floor portal, and if that spot is near the portal, nudge your sideways speed so
@@ -275,6 +324,12 @@ namespace TheOneFramework.Portals
             // CharacterController has no persistent velocity vector of its own; .velocity only
             // reflects the displacement from the last Move() call, which is enough to redirect.
             Vector3 currentVelocity = controller.velocity;
+            // If that last Move() got cut short (touched down on the portal's floor this frame or
+            // just before), use the speed you were still flying at.
+            if (Time.time - lastAirTime < 0.25f && airVelocity.sqrMagnitude > currentVelocity.sqrMagnitude)
+            {
+                currentVelocity = airVelocity;
+            }
 
             // Map the capsule's middle (the point that triggered the warp) rather than the feet,
             // then hang the upright capsule back off it.

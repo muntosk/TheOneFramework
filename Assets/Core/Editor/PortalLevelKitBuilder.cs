@@ -480,8 +480,9 @@ namespace TheOneFramework.EditorTools
                 tmp.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
                 return tmp;
             };
-            var number = text("Number", "01", 9f, new Vector3(-0.05f, Y + H * 0.78f, -0.025f), new Vector2(W * 0.84f, 0.8f), TMPro.TextAlignmentOptions.Left);
-            var total = text("Total", "/19", 3f, new Vector3(0.05f, Y + H * 0.64f, -0.025f), new Vector2(W * 0.84f, 0.3f), TMPro.TextAlignmentOptions.Right);
+            // The big number fills the top; "/19" sits under it on the right, just above the divider line.
+            var number = text("Number", "01", 7.5f, new Vector3(0, Y + H * 0.81f, -0.025f), new Vector2(W * 0.84f, 0.6f), TMPro.TextAlignmentOptions.Left);
+            var total = text("Total", "/19", 2.4f, new Vector3(0, Y + H * 0.6f, -0.025f), new Vector2(W * 0.84f, 0.2f), TMPro.TextAlignmentOptions.Right);
 
             // progress bar: dark track, fill scaled from its left edge
             float barY = Y + H * 0.42f, barW = W * 0.84f;
