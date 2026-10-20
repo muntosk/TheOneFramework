@@ -1,17 +1,26 @@
-# Handoff — where we left off (2026-10-16, laptop)
+# Handoff — where we left off (2026-10-20, laptop)
 
 Read this together with `CLAUDE.md` and `Doc/Narrative.md` at the start of the next session.
-What was discussed and decided along the way: `Doc/Sessions/2026-10-16_laptop.md` (this session); earlier ones in
+What was discussed and decided along the way: `Doc/Sessions/2026-10-20_laptop.md` (this session: Chamber 6), `2026-10-16_laptop.md` (Chambers 3–5, window, ending); earlier ones in
 `Doc/Sessions/`.
 
 ## Level order (scene names matter)
 `LevelManager` loads the next level by name: `Level_` + (current number + 1). The whole game is playable end to end:
 - `MainMenu` → `Level_0` (surface, lift down) → `Level_1` (Chamber 1 "Welcome", portal gun) → `Level_2` (Chamber 2
   "The neighbour", cube + Wes) → `Level_3` (Chamber 3, fizzler) → `Level_4` (Chamber 4, cracks + fold-out bridge) → `Level_5` (Chamber 5 "Momentum", flinging) →
-  `Level_6` (the window, claw, conveyor, escape) → `Level_7` (surface at sunset, ending) → end card → `MainMenu`.
+  `Level_6` (Chamber 6 "Calibration", hard combo) → `Level_7` (the window, claw, conveyor, escape) → `Level_8` (surface at sunset, ending) → end card → `MainMenu`.
 - `001_portal_test_level1` is still in the build list (old test scene, harmless — remove when convenient).
 
 ## Current state (what's new this session)
+**Chamber 6 "Calibration" (`Level_6`, new 2026-10-20)** — big room (8×14×7 panels) over toxic water. Exit needs two
+cubes on two plates (`RequireAllTriggers` = 2). Solution: (1) cube from the start dispenser; fling it (pit floor
+portal + left-wall panel) to the island, then fling yourself. (2) A full-width emancipation grid splits the island:
+front floor patch + right-wall panel behind the grid (shoot through it) carries the cube across → island plate.
+(3) Put portals on the back floor patch and the high wall above the exit ledge, press the **timer button** (7 s),
+drop into the floor portal, grab cube 2 from the glass cage (`GlassCage`, dispenser respawns it) → exit-ledge plate.
+Way back to the start: front-wall high panel. Checkpoint on the island. Antlines from plates/timer. Not yet played
+by a human — **play it and tune** (timer length, difficulty).
+
 **Chamber 3 (`Level_3`)** — full-width fizzler; white panel front-left + back-right (shoot the far one through the
 field), carry the cube round it. Lines `Chamber03_*` (intro, cube erased, plate = first slip).
 
@@ -19,7 +28,7 @@ field), carry the cube round it. Lines `Chamber03_*` (intro, cube erased, plate 
 bridge (`Platform_FromWall`, made black/non-portalable). Second white panel hidden in a crawlspace behind a broken
 false wall (`Crawlspace/`, Rat Man graffiti, `BrokenEdges`, BTS concrete `Lining`, orange lamp). Exit fizzler.
 
-**`Level_6` — the window and the escape**
+**`Level_7` — the window and the escape** (was `Level_6`)
 - Observation room (`ChamberShell` with the new right-wall window opening) over a hall of robot copies
   (`Hall/RobotCopies`: patrols + hurdlers on self-keyframed route clips, 33 waiting units facing the window).
   `Sequence/Trigger_Reveal` locks the entrance, cross-fades `LevelMusic` to `Reveal_Tension`, starts
@@ -32,7 +41,7 @@ false wall (`Crawlspace/`, Rat Man graffiti, `BrokenEdges`, BTS concrete `Lining
   (`Maintenance/Window_Wes`, `Maintenance_Wes`), he turns and unlocks `Trigger_WesOpensExit`.
 - Training rooms seen from the belt (`Disposal/TrainingRooms`): Volunteer_A/B/C and **Wes = Exo Gray placeholders**.
 
-**`Level_7` — ending at sunset**
+**`Level_8` — ending at sunset** (was `Level_7`)
 - Copy of Level_0: `Skybox_Sunset`, warm fog, low sun, no music (nature ambience only). The entrance lift
   (`Lift_Up`) brings you *up*.
 - Guidance: green lightsticks along the existing path (`Gameplay/Ending/Lightsticks`), Wes' campfire with a smoke
@@ -53,14 +62,15 @@ false wall (`Crawlspace/`, Rat Man graffiti, `BrokenEdges`, BTS concrete `Lining
   purpose (a waiting command of an interrupted conversation would skip a line of the next one).
 
 ## Still to do (next steps)
-- **Play the whole game once yourself** (especially Level_6 → 7) and run **playtest 1** (≥ 4 people, document it).
+- **Play the whole game once yourself** (especially Chamber 6 and Level_7 → 8) and run **playtest 1** (≥ 4 people, document it).
 - Mixamo **Wes** + volunteers: replace the `Body` child of the `Wes`/`Volunteer_*` objects (Level_2 `Wes_Placeholder`,
-  Level_6 `Disposal/TrainingRooms`, Level_7 `Gameplay/Ending/Wes`). Keep the object names — Yarn finds them by name.
+  Level_7 `Disposal/TrainingRooms`, Level_8 `Gameplay/Ending/Wes`). Keep the object names — Yarn finds them by name.
 - Open the self-keyframed clips in the Animation window and tweak a few keys yourself (rubric: ≥ 2 self-keyframed).
 - Sculpt/paint the surface terrain **by hand** (rubric; screenshots as proof) — e.g. flatten the campfire spot.
 - Music in Chambers 1–4 (`LevelMusic` with `Chambers_Calm_01/02`) and maybe `Escape.ogg` on the belt.
 - GLaDOS-style TTS for S.A.F.E.-T: the user has a file somewhere (not found on the laptop) — ask where it is.
 - In-game HUD/pause menu, credits for the music (source unknown, `Demo/Audio/Music`).
+- Real Portal 2 timer tick (`buttons/button_synth_*` or similar) on the desktop to replace the generated `timer_tick.wav`.
 - Robots at the very end keep their walk cycle after stopping (only seconds before the end card; fine for now).
 
 ## Machine setup notes

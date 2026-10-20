@@ -112,6 +112,29 @@ S.A.F.E.-T: Excellent. Unit performance in this chamber has improved by forty pe
 S.A.F.E.-T: Your performance has not been measured. It no longer needs to be.
 ===
 
+title: Calibration_Intro
+---
+S.A.F.E.-T: Chamber six. Final calibration. I mean, final test. It is a normal test.
+S.A.F.E.-T: The exit requires two weighted cubes. This chamber contains two cubes. Neither of them is near you.
+S.A.F.E.-T: The units have already solved this chamber four hundred times. They would like to see how a human gets it wrong.
+===
+
+title: Calibration_Fizzled
+---
+S.A.F.E.-T: The cube has been emancipated. A replacement has been dispensed. The units have noted where you went wrong.
+===
+
+title: Calibration_PlateB
+---
+S.A.F.E.-T: One cube. One more to go. It is on the far side of the chamber. Behind glass. On a timer. Good luck.
+===
+
+title: Calibration_Done
+---
+S.A.F.E.-T: Calibration complete. All four thousand units now know how to beat this chamber.
+S.A.F.E.-T: So do you. That will not be relevant for much longer. Please proceed.
+===
+
 title: Chamber05_Intro
 ---
 S.A.F.E.-T: Welcome to the observation area, Volunteer 32. This concludes the test series.

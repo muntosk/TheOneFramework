@@ -73,7 +73,7 @@ Alleen verplaatst, inhoud is precies zoals de docenten het maakten.
 `RobotCopies/`: `DeploymentMarch`, `FollowTerrainHeight`, `RobotCopyAnimationEvents`
 
 ### Assets
-- **Scènes:** `MainMenu`, `Level_0` t/m `Level_6`.
+- **Scènes:** `MainMenu`, `Level_0` t/m `Level_8`.
 - **Prefabs:** level kit (`Core/Portal/Prefabs/LevelKit`, gegenereerd), puzzelstukken (`Gameplay/`: deur, lift, knoppen, platen, dispenser, portals), Portal-props, `PlayerRig`.
 - **Set dressing:** `Demo/Dressing/` (decals, scatter, omgezette Portal 2-modellen).
 - **Animatie:** de zelf-gekeyframede clips `RobotCopy_Patrol` en `RobotCopy_Hurdles` (rubric) en de robot-controllers in `Demo/RobotCopies`; robot- en vrijwilligerprefabs (`Demo/Escape/Prefabs`).

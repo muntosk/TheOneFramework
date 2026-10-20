@@ -47,7 +47,7 @@ they're testing *you*." He comes back at the end: he's the only one who listens 
 ## Game flow
 
 ```
-Surface (terrain) ──lift down──▶ Chamber 1 ─▶ 2 ─▶ 3 ─▶ 4 ─▶ The window ─▶ Conveyor belt ──escape──▶ Surface (terrain)
+Surface (terrain) ──lift down──▶ Chamber 1 ─▶ 2 ─▶ 3 ─▶ 4 ─▶ 5 ─▶ 6 ─▶ The window ─▶ Conveyor belt ──escape──▶ Surface (terrain)
 ```
 
 The surface is **one terrain scene (exactly 200×200) used twice**: at the start you see what you're
@@ -83,6 +83,14 @@ Scratched warnings appear behind broken wall panels; overgrown, "closed for main
 Everything learned so far combined.
 - *Teaches:* fold-out platforms + combining all mechanics.
 - *Told through:* environmental storytelling (decals, vines, graffiti).
+
+### 4b. Chamber 5 "Momentum" and Chamber 6 "Calibration" *(Act 2 — the tests speed up)*
+The tests get harder right before the twist: the units are learning faster than expected.
+- *Chamber 5:* flinging (fall into a floor portal, fly out of a wall portal), also with the cube.
+- *Chamber 6:* big, hard combo chamber. Two cubes for two plates: fling the first cube to an island,
+  get it past an emancipation grid through portals, then use a timer button + a portal shortcut to
+  grab the second cube from a glass cage on the far ledge before it closes.
+- *Told through:* S.A.F.E.-T slipping ("Final calibration. I mean, final test.").
 
 ### 5. The window *(Act 2 → 3 — plot twist)*
 A large observation window. Behind it: a hall full of robots in your suit, perfectly replaying the
@@ -155,16 +163,16 @@ but what you taught them is out in the world.
 | Human characters for Wes + volunteers (Mixamo) | ⬜ download yourself (Adobe login) |
 | Robot copies behind the window | ✅ StarterAssets robot model already in project |
 | S.A.F.E.-T announcer lines (text on screen, through Yarn) | ✅ all levels; voice (TTS) maybe later |
-| Conversations with Wes (Yarn, choices) | ✅ Chamber 2, maintenance window (Level_5), ending at the lake (Level_6); Wes is still a placeholder model |
-| Chambers 1–4 (`Level_1`–`Level_4`) | ✅ built (gun pick-up; cube/plate/dispenser + Wes; fizzler; cracks + fold-out bridge) |
+| Conversations with Wes (Yarn, choices) | ✅ Chamber 2, maintenance window (Level_7), ending at the lake (Level_8); Wes is still a placeholder model |
+| Chambers 1–6 (`Level_1`–`Level_6`) | ✅ built (gun pick-up; cube/plate/dispenser + Wes; fizzler; cracks + fold-out bridge; 5 "Momentum" flinging; 6 "Calibration" = hard combo chamber) |
 | "Bang on glass" prompt + "RUN!" speech bubble | ✅ maintenance room window (`InterruptingDialogueTrigger` + `<<say>>`) |
 | Conveyor belt that carries the player | ✅ `ConveyorBelt` (Core), claw grab drops you on it |
 | Incinerator fire that turns on as you approach | ✅ `Incinerator` — particles toggled by script |
 | Robot copies replaying your moves (window scene) | ✅ StarterAssets robot on 3 self-keyframed route clips (`Demo/RobotCopies`) |
-| Volunteers training behind windows | 🟡 placeholders (Exo Gray) in `Level_5`; Mixamo humans still to swap in |
-| Surface scene (terrain 200×200, trees, grass, water, wind) — `Level_0` start, `Level_6` sunset ending | ✅ both versions |
+| Volunteers training behind windows | 🟡 placeholders (Exo Gray) in `Level_7`; Mixamo humans still to swap in |
+| Surface scene (terrain 200×200, trees, grass, water, wind) — `Level_0` start, `Level_8` sunset ending | ✅ both versions |
 | Facility entrance on the surface + recruitment posters | ✅ done (lift goes down into Level_1) |
-| Ending on the surface (Wes, deployment, end card) | ✅ `Level_6`, `GameEnding` → main menu |
+| Ending on the surface (Wes, deployment, end card) | ✅ `Level_8`, `GameEnding` → main menu |
 
 ---
 

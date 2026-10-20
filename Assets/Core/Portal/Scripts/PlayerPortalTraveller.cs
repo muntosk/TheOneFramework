@@ -62,7 +62,7 @@ namespace TheOneFramework.Portals
             this.outPortal = outPortal;
             this.wallColliders = wallColliders;
 
-            Portal.IgnoreWalls(controller, wallColliders, true);
+            Portal.IgnoreWalls(controller, wallColliders, IsOpen(inPortal));
         }
 
         public void ExitPortal(Collider[] wallColliders)
@@ -82,6 +82,7 @@ namespace TheOneFramework.Portals
         // (KillZone water, RespawnBehaviour's fall threshold) must not count that.
         public bool IsPassingThrough =>
             inPortal != null && inPortal.IsPlaced &&
+            IsOpen(inPortal) &&
             inPortal.transform.InverseTransformPoint(transform.position).z > 0.0f &&
             IsWithinPortalRect(inPortal, transform.position + Vector3.up * walkInHeight);
 
@@ -115,8 +116,11 @@ namespace TheOneFramework.Portals
             // until you jumped. Checking the capsule's middle instead was far too forgiving.
             Vector3 checkPoint = transform.position + Vector3.up * walkInHeight;
             bool withinPortalRect = IsWithinPortalRect(inPortal, checkPoint);
-            Portal.IgnoreWalls(controller, wallColliders, withinPortalRect);
+            Portal.IgnoreWalls(controller, wallColliders, withinPortalRect && IsOpen(inPortal));
         }
+
+        // A portal only leads somewhere once its partner is placed too; until then its wall stays solid.
+        private static bool IsOpen(Portal portal) => portal.OtherPortal != null && portal.OtherPortal.IsPlaced;
 
         private static bool IsWithinPortalRect(Portal portal, Vector3 worldPos)
         {

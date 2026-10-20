@@ -75,7 +75,7 @@ namespace TheOneFramework.Portals
             this.outPortal = outPortal;
             this.wallColliders = wallColliders;
 
-            Portal.IgnoreWalls(collider, wallColliders, true);
+            Portal.IgnoreWalls(collider, wallColliders, IsOpen(inPortal));
 
             cloneObject.SetActive(false);
 
@@ -120,8 +120,11 @@ namespace TheOneFramework.Portals
             }
 
             bool withinPortalRect = IsWithinPortalRect(inPortal, transform.position);
-            Portal.IgnoreWalls(collider, wallColliders, withinPortalRect);
+            Portal.IgnoreWalls(collider, wallColliders, withinPortalRect && IsOpen(inPortal));
         }
+
+        // A portal only leads somewhere once its partner is placed too; until then its wall stays solid.
+        private static bool IsOpen(Portal portal) => portal.OtherPortal != null && portal.OtherPortal.IsPlaced;
 
         private static bool IsWithinPortalRect(Portal portal, Vector3 worldPos)
         {

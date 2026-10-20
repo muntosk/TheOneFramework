@@ -88,6 +88,12 @@ namespace TheOneFramework.Portals
             Renderer.enabled = OtherPortal.IsPlaced;
             UpdateOpenAnimation();
 
+            // Only one portal placed: it's a closed door - nothing goes through until its partner exists.
+            if (OtherPortal == null || !OtherPortal.IsPlaced)
+            {
+                return;
+            }
+
             for (int i = portalObjects.Count - 1; i >= 0; --i)
             {
                 var traveller = portalObjects[i];

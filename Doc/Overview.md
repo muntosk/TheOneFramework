@@ -20,8 +20,9 @@ Wat uit het framework van de docenten komt en wat zelf gemaakt is: `Doc/Framewor
 | `Levels/Level_3` | Chamber 3 — fizzler | ✅ |
 | `Levels/Level_4` | Chamber 4 — scheuren, kruipruimte, uitklapbrug | ✅ |
 | `Levels/Level_5` | Chamber 5 "Momentum": flingen, kubus flingen, rijzend platform met knop | ✅ |
-| `Levels/Level_6` | Het raam (twist), klauw, lopende band, ontsnapping, Wes | ✅ |
-| `Levels/Level_7` | Oppervlak bij zonsondergang, einde, robots marcheren | ✅ |
+| `Levels/Level_6` | Chamber 6 "Calibration": groot en moeilijk — fling, kubus flingen, fizzer-veld over het eiland, twee platen, timerknop + glazen kooi | ✅ |
+| `Levels/Level_7` | Het raam (twist), klauw, lopende band, ontsnapping, Wes | ✅ |
+| `Levels/Level_8` | Oppervlak bij zonsondergang, einde, robots marcheren | ✅ |
 | `001_portal_test_level1` | Oude testscène | ⚠️ staat nog in de build list — **weghalen** |
 | `000_portal_setup` | Oude portal-testopstelling | ❓ weg te halen |
 | `Levels/Old/Old_Level_1`, `Old_Level_2` | Oude versies van chambers | ❓ weg te halen |
@@ -36,8 +37,8 @@ Wat uit het framework van de docenten komt en wat zelf gemaakt is: `Doc/Framewor
 |---|---|---|
 | `GameAudio` | Speelt **elk** geluid af via de juiste mixergroep, beperkt dubbele geluiden | 🧩 door ~20 scripts |
 | `GameAudioSettings` | Welke mixergroep per soort geluid (asset in `Resources`) | 🧩 |
-| `AudioChannelRouter` | Zet een AudioSource die je zelf in een scène plaatst op het juiste kanaal | ✅ Level_0, Level_7 |
-| `LevelMusic` | Achtergrondmuziek per level, `CrossFadeTo` | ✅ Level_6 (Chambers 1–4 nog niet) |
+| `AudioChannelRouter` | Zet een AudioSource die je zelf in een scène plaatst op het juiste kanaal | ✅ Level_0, Level_8 |
+| `LevelMusic` | Achtergrondmuziek per level, `CrossFadeTo` | ✅ Level_7 (Chambers 1–4 nog niet) |
 | `VolumeSlider` | UI-slider ↔ mixervolume, wordt opgeslagen | ✅ MainMenu |
 
 ### Portal (`Core/Portal/Scripts`) — de puzzelmechanica
@@ -49,14 +50,14 @@ Wat uit het framework van de docenten komt en wat zelf gemaakt is: `Doc/Framewor
 | `PlayerPortalTraveller`, `PortalableObject`, `IPortalTraveller` | Speler / objecten door een portal sturen | 🧩 PlayerRig, kubus |
 | `PlayerCarry`, `Carryable` | Kubus oppakken en dragen | 🧩 PlayerRig, kubus |
 | `CubeDispenser` | Laat een kubus vallen (+ opnieuw als hij weg is) | ✅ |
-| `PressurePlate`, `PressurePlateWeight`, `PoleButton` | Vloerknop, gewicht, drukknop op paal | ✅ via prefabs |
+| `PressurePlate`, `PressurePlateWeight`, `PoleButton` | Vloerknop, gewicht, drukknop op paal (`PoleButton` kan ook een timer: `resetAfter` + `onReleased`, tikt met `timer_tick.wav`) | ✅ via prefabs |
 | `RequireAllTriggers` | EN-poort: meerdere knoppen/platen samen | ✅ Level_1–4 |
 | `Door`, `Lift`, `ExtendingPlatform` | Schuifdeur, lift tussen levels, uitklap-/opkomend paneel | ✅ |
 | `PortalFizzleField` | Fizzler: wist portals en wat je draagt | ✅ Level_3/4 |
 | `ChamberShell`, `ChamberSign` | De chamber-doos in panelen + het chamberbord | ✅ via `Chamber`-prefab |
 | `DoorSurround` | Vult de hoeken tussen de ronde deur en het vierkante gat in de muur (ChamberShell plaatst hem zelf) | ✅ elke chamber |
-| `IndicatorLine` | Portal-"antlines": lijnen van een knop naar wat hij aanstuurt, blauw → oranje bij `TurnOn()` | ✅ Level_5, `PoleButton`-prefab |
-| `ConveyorBelt` | Lopende band die speler/objecten meeneemt | ✅ Level_6 |
+| `IndicatorLine` | Portal-"antlines": lijnen van een knop naar wat hij aanstuurt, blauw → oranje bij `TurnOn()` | ✅ Level_5, Level_6, `PoleButton`-prefab |
+| `ConveyorBelt` | Lopende band die speler/objecten meeneemt | ✅ Level_7 |
 | `LevelManager` | Laadt `Level_` + (nummer + 1) | ✅ |
 
 ### Speler (`Core/PlayerOverrides/Scripts`)
@@ -78,7 +79,7 @@ Wat uit het framework van de docenten komt en wat zelf gemaakt is: `Doc/Framewor
 | Script | Wat | Gebruik |
 |---|---|---|
 | `Interaction/DialogueTrigger` | Start een Yarn-gesprek bij een trigger | ✅ alle levels |
-| `Interaction/UnityEventTrigger` | Trigger → UnityEvent | ✅ Level_6 |
+| `Interaction/UnityEventTrigger` | Trigger → UnityEvent | ✅ Level_7 |
 | `Interaction/PlayerActivatable` | Basisklasse van bijna alle triggers | 🧩 |
 | `Interaction/LoadScene` | Scène laden | 🧩 via `YarnSpinnerFunctions`, `GameEnding` |
 | `Interaction/AnimationToggle`, `Collectable`, `ShowMenu`, `SimpleAnimationTrigger`, `SimpleAudioTrigger` | Docent-voorbeelden | 🧪 alleen Demonstration |
@@ -127,12 +128,12 @@ Wat uit het framework van de docenten komt en wat zelf gemaakt is: `Doc/Framewor
 
 | Script | Wat | Gebruik |
 |---|---|---|
-| `Escape/ClawGrab` | Klauw pakt je op na de twist (`<<grab_player>>`) | ✅ Level_6 |
-| `Escape/Incinerator` | Vuur bij de oven, particles aan/uit op afstand | ✅ Level_6 |
-| `Escape/InterruptingDialogueTrigger` | Gesprek dat een lopend gesprek mag onderbreken | ✅ Level_6/7 |
+| `Escape/ClawGrab` | Klauw pakt je op na de twist (`<<grab_player>>`) | ✅ Level_7 |
+| `Escape/Incinerator` | Vuur bij de oven, particles aan/uit op afstand | ✅ Level_7 |
+| `Escape/InterruptingDialogueTrigger` | Gesprek dat een lopend gesprek mag onderbreken | ✅ Level_8/8 |
 | `Escape/EscapeYarnCommands` | `<<turn_to>>`, `<<look_at>>` | ✅ via Yarn |
-| `Escape/GameEnding` | Eindkaart + credits → menu (`<<end_game>>`) | ✅ Level_7 |
-| `RobotCopies/DeploymentMarch` | **Nieuw**: robots lopen vanaf de lift het pad af naar je toe en stoppen vóór je | ✅ Level_7 |
+| `Escape/GameEnding` | Eindkaart + credits → menu (`<<end_game>>`) | ✅ Level_8 |
+| `RobotCopies/DeploymentMarch` | **Nieuw**: robots lopen vanaf de lift het pad af naar je toe en stoppen vóór je | ✅ Level_8 |
 | `RobotCopies/FollowTerrainHeight` | Houdt voeten op het terrein | 🧩 Deploy-prefab (sinds `DeploymentMarch` eigenlijk overbodig) |
 | `RobotCopies/RobotCopyAnimationEvents` | Slikt voetstap-events van de robots in | 🧩 robotprefabs |
 | `NPC/WalkToBehaviour` | NPC loopt naar een punt (docent) | 🧩 Yarn-commando, niet gebruikt in levels |
