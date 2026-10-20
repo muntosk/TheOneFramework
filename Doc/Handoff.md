@@ -9,7 +9,7 @@ What was discussed and decided along the way: `Doc/Sessions/2026-10-20_laptop.md
 - `MainMenu` → `Level_0` (surface, lift down) → `Level_1` (Chamber 1 "Welcome", portal gun) → `Level_2` (Chamber 2
   "The neighbour", cube + Wes) → `Level_3` (Chamber 3, fizzler) → `Level_4` (Chamber 4, cracks + fold-out bridge) → `Level_5` (Chamber 5 "Momentum", flinging) →
   `Level_6` (Chamber 6 "Calibration", hard combo) → `Level_7` (the window, claw, conveyor, escape) → `Level_8` (surface at sunset, ending) → end card → `MainMenu`.
-- `001_portal_test_level1` is still in the build list (old test scene, harmless — remove when convenient).
+- Unused scenes (old tests, teacher demo scenes, old chambers) are in `Demo/Scenes/Archived/`, out of the build list.
 
 ## Current state (what's new this session)
 **Chamber 6 "Calibration" (`Level_6`, new 2026-10-20)** — big room (8×14×7 panels) over toxic water. Exit needs two

@@ -135,12 +135,16 @@ namespace TheOneFramework.Portals
             }
         }
 
-        // A strip per 2x2 panels, running along the room, with a lamp under each.
+        // A strip per 2x2 panels, running along the room, with a lamp under each. URP renders at most 32
+        // extra lights at once, so a big room only puts a (stronger, wider) lamp under every other strip.
+        private const int MaxLamps = 24;
+
         private void BuildCeilingLights(Transform parent, float w, float l, float h)
         {
             var lights = new GameObject("CeilingLights").transform;
             lights.SetParent(parent, false);
             int columns = Mathf.Max(1, width / 2), rows = Mathf.Max(1, length / 2);
+            bool sparse = columns * rows > MaxLamps;
             for (int c = 0; c < columns; c++)
             {
                 float x = -w / 2 + (c + 0.5f) * (w / columns);
@@ -156,12 +160,13 @@ namespace TheOneFramework.Portals
                     if (lightStripMaterial != null) strip.GetComponent<Renderer>().sharedMaterial = lightStripMaterial;
                     strip.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
+                    if (sparse && (c + r) % 2 == 1) continue;
                     var lamp = new GameObject("Lamp").AddComponent<Light>();
                     lamp.transform.SetParent(strip.transform.parent, false);
                     lamp.transform.localPosition = new Vector3(x, h - 0.7f, z);
                     lamp.type = LightType.Point;
-                    lamp.range = Mathf.Max(h * 1.6f, Panel * 3);
-                    lamp.intensity = 5.0f;
+                    lamp.range = Mathf.Max(h * 1.6f, Panel * 3) * (sparse ? 1.4f : 1.0f);
+                    lamp.intensity = sparse ? 7.0f : 5.0f;
                     lamp.color = new Color(0.88f, 0.94f, 1f);
                     lamp.shadows = c == 0 && r == 0 ? LightShadows.Soft : LightShadows.None;
                 }

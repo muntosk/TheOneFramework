@@ -28,7 +28,7 @@ Alleen verplaatst, inhoud is precies zoals de docenten het maakten.
 | Editor | `Core/Editor/`: `DependencyChecker`, `FMODChecker` |
 
 **Assets uit het framework:**
-- De scènes `Demonstration` en `Playground` (met NavMesh/Lighting-mappen).
+- De scènes `Demonstration` en `Playground` (met NavMesh/Lighting-mappen), nu in `Demo/Scenes/Archived/`.
 - `Demo/Dialogue/DemonstrationScript/` en `Demo/InventoryItems/`.
 - `Demo/Prefabs/Letter`, `Demo/NPC/` (NPC-prefab en controller).
 - De losse `.anim`/`.controller` in `Demo/Animations/` (Open/Close, AnimationToggle, SimpleAnimationTrigger, UseInventoryItem).

@@ -4594,10 +4594,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1630576429}
     m_Modifications:
-    - target: {fileID: 4969616693118217478, guid: 03b22f3575777c34591ba3b7a58a4e15, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5378006302162387446, guid: 03b22f3575777c34591ba3b7a58a4e15, type: 3}
       propertyPath: m_Name
       value: Rock_Overgrown_B
@@ -5540,10 +5536,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1630576429}
     m_Modifications:
-    - target: {fileID: 3550500782133942370, guid: 4a154885078fdb046baf0e7a5a464637, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6530764182435078953, guid: 4a154885078fdb046baf0e7a5a464637, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.1086019
@@ -7882,10 +7874,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1630576429}
     m_Modifications:
-    - target: {fileID: 4969616693118217478, guid: 03b22f3575777c34591ba3b7a58a4e15, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5378006302162387446, guid: 03b22f3575777c34591ba3b7a58a4e15, type: 3}
       propertyPath: m_Name
       value: Rock_Overgrown_B
@@ -9483,10 +9471,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1630576429}
     m_Modifications:
-    - target: {fileID: 4969616693118217478, guid: 03b22f3575777c34591ba3b7a58a4e15, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5378006302162387446, guid: 03b22f3575777c34591ba3b7a58a4e15, type: 3}
       propertyPath: m_Name
       value: Rock_Overgrown_B
@@ -10250,10 +10234,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1630576429}
     m_Modifications:
-    - target: {fileID: 4969616693118217478, guid: 03b22f3575777c34591ba3b7a58a4e15, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5378006302162387446, guid: 03b22f3575777c34591ba3b7a58a4e15, type: 3}
       propertyPath: m_Name
       value: Rock_Overgrown_B
@@ -10576,10 +10556,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1630576429}
     m_Modifications:
-    - target: {fileID: 3550500782133942370, guid: 4a154885078fdb046baf0e7a5a464637, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6530764182435078953, guid: 4a154885078fdb046baf0e7a5a464637, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.82752675
@@ -11614,10 +11590,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1630576429}
     m_Modifications:
-    - target: {fileID: 3550500782133942370, guid: 4a154885078fdb046baf0e7a5a464637, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6530764182435078953, guid: 4a154885078fdb046baf0e7a5a464637, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.6662969
@@ -13830,10 +13802,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1630576429}
     m_Modifications:
-    - target: {fileID: 3550500782133942370, guid: 4a154885078fdb046baf0e7a5a464637, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6530764182435078953, guid: 4a154885078fdb046baf0e7a5a464637, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.0963347
@@ -13963,10 +13931,6 @@ PrefabInstance:
     - target: {fileID: 4274526753779858, guid: ebb70c824ce258a4ea3211dcca909d8a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5215288572424152286, guid: ebb70c824ce258a4ea3211dcca909d8a, type: 3}
-      propertyPath: m_Convex
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -23,10 +23,7 @@ Wat uit het framework van de docenten komt en wat zelf gemaakt is: `Doc/Framewor
 | `Levels/Level_6` | Chamber 6 "Calibration": groot en moeilijk — fling, kubus flingen, fizzer-veld over het eiland, twee platen, timerknop + glazen kooi | ✅ |
 | `Levels/Level_7` | Het raam (twist), klauw, lopende band, ontsnapping, Wes | ✅ |
 | `Levels/Level_8` | Oppervlak bij zonsondergang, einde, robots marcheren | ✅ |
-| `001_portal_test_level1` | Oude testscène | ⚠️ staat nog in de build list — **weghalen** |
-| `000_portal_setup` | Oude portal-testopstelling | ❓ weg te halen |
-| `Levels/Old/Old_Level_1`, `Old_Level_2` | Oude versies van chambers | ❓ weg te halen |
-| `Demonstration`, `Playground` (+ mappen met NavMesh/Lighting) | Voorbeeldscènes van de docent | ❓ weg te halen als je ze niet meer nodig hebt |
+| `Archived/` | Niet meer gebruikte scènes: `000_portal_setup`, `001_portal_test_level1` (mist een prefab), `Old_Level_1/2`, en de docentscènes `Demonstration` + `Playground` (met hun NavMesh/Lighting-mappen). Niet in de build list | 🗄️ gearchiveerd |
 
 ---
 
